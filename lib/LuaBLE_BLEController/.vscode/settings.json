@@ -1,0 +1,19 @@
+{
+    "files.associations": {
+        "list": "cpp",
+        "xmemory": "cpp",
+        "xlocmes": "cpp",
+        "algorithm": "cpp",
+        "iterator": "cpp",
+        "xhash": "cpp",
+        "xtree": "cpp",
+        "xutility": "cpp",
+        "xstring": "cpp",
+        "system_error": "cpp",
+        "xlocale": "cpp",
+        "deque": "cpp",
+        "format": "cpp",
+        "initializer_list": "cpp",
+        "vector": "cpp"
+    }
+}

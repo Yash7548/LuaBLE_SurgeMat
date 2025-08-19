@@ -1,0 +1,86 @@
+{
+    "name": "LuaBLE_LuatOS",
+    "version": "0.1.1",
+    "description": "LuatOS ported to ESP32 on PLATFORMIO",
+    "keywords": "lua, esp32, esp32s3, scripting, interpreter, luatos",
+
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/chahilhyper9725/LuaBLE_LuatOS.git"
+    },
+    "authors": [
+      {
+        "name": "Akshay P Kumar",
+        "email": "embeddedekerala@gmail.com",
+        "maintainer": true
+      },
+      {
+        "name": "Chahil Patel",
+        "email": "chahil@hyperlab.life",
+        "maintainer": true
+      }
+    ],
+    "license": "MIT",
+    "homepage": "https://github.com/chahilhyper9725/LuaBLE_LuatOS.git",
+    "frameworks": ["arduino"],
+    "platforms": ["espressif32"],
+    "build": {
+      "srcDir": "src",
+      "srcFilter": [
+      "-<*>",
+      "+<arduinobindings/**>",
+      "+<cjson/**>",
+      "+<cmux/**>",
+      "+<common/**>",
+      "+<i2c-tools/**>",
+      "+<lfs/**>",
+      "+<lua/src/**>",
+      "+<lua-cjson/**>",
+      "+<luat/freertos/**>",
+      "+<luat/modules/**>",
+      "+<luat/vfs/**>",
+      "+<luat_idf/port/**>",
+       "+<luatoswrapper/**>",
+      "+<printf/**>",
+      "+<qrcode/**>",
+      "+<romfs/**>",
+      "+<shell/**>",
+      "+<wlan/**>",
+      "-<luat_idf/port/luat_sntp_idf5.c>",
+      "-<luat_idf/port/luat_wlan_idf5.c>"
+    ],
+      "includeDir": "include",
+      "libArchive": true,
+      "flags": [
+        "-I src/arduinobindings",
+        "-I src/luat/include",
+        "-I src/cmux",
+        "-I src/common",
+        "-I src/cjson",
+        "-I src/i2c-tools",
+        "-I src/lfs",
+        "-I src/lua/include",
+        "-I src/lua-cjson",
+        "-I src/luat_idf/include",
+        "-I src/luatoswrapper",
+        "-I src/printf",
+        "-I src/qrcode",
+        "-I src/romfs",
+        "-I src/shell",
+        "-I src/wlan",
+
+      "-DLUA_USE_ESP32S3",
+      "-DESP_LWIP_DHCP_FINE_TIMERS_ONDEMAND0", 
+      "-D__LUATOS__",
+      "-DLUAT_FREERTOS_FULL_INCLUDE"
+      ]
+    },
+    "examples": [
+    {
+      "name": "Basic Lua",
+      "base": "examples/BasicLua",
+      "files": ["platformio.ini", "src/main.cpp","partitions.16m.csv"]
+    }
+    ]
+
+  }

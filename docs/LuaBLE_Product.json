@@ -1,0 +1,1102 @@
+{
+    "name": "ProductName",
+    "prefix": "product_",
+    "description": "",
+    "bleServiceId": "0xae06",
+    "apiDocsFile": "docs_product_",
+    "version": "1.0.0",
+    "autocomplete": {
+        "functions": [
+            {
+                "name": "_G",
+                "snippet": "_G(${0:...})",
+                "description": "_G"
+            },
+            {
+                "name": "_VERSION",
+                "snippet": "_VERSION(${0:...})",
+                "description": "_VERSION"
+            },
+            {
+                "name": "assert",
+                "snippet": "assert(${1:v}${2:[, message]})",
+                "description": "assert()"
+            },
+            {
+                "name": "collectgarbage",
+                "snippet": "collectgarbage(${1:[opt]}${2:[, arg]})",
+                "description": "collectgarbage()"
+            },
+          
+            {
+                "name": "dofile",
+                "snippet": "dofile(${1:[filename]})",
+                "description": "dofile ([filename])"
+            },
+            {
+                "name": "elif",
+                "snippet": "else if ${1:condition} then\n\t${0:-- body}\n",
+                "description": "elif"
+            },
+            {
+                "name": "error",
+                "snippet": "error(${0:...})",
+                "description": "error (message [, level])"
+            },
+            {
+                "name": "file:close",
+                "snippet": "file:close(${0:...})",
+                "description": "file:close ()"
+            },
+            {
+                "name": "file:flush",
+                "snippet": "file:flush(${0:...})",
+                "description": "file:flush ()"
+            },
+            {
+                "name": "file:lines",
+                "snippet": "file:lines(${0:...})",
+                "description": "file:lines ()"
+            },
+            {
+                "name": "file:read",
+                "snippet": "file:read(${0:...})",
+                "description": "file:read (...)"
+            },
+            {
+                "name": "file:seek",
+                "snippet": "file:seek(${0:...})",
+                "description": "file:seek ([whence] [, offset])"
+            },
+            {
+                "name": "file:setvbuf",
+                "snippet": "file:setvbuf(${0:...})",
+                "description": "file:setvbuf (mode [, size])"
+            },
+            {
+                "name": "file:write",
+                "snippet": "file:write(${0:...})",
+                "description": "file:write (...)"
+            },
+            {
+                "name": "for",
+                "snippet": "for ${1:i}=${2:1},${3:10} do\n\t${0:print(i)}\nend",
+                "description": "for i=1,10"
+            },
+            {
+                "name": "fori",
+                "snippet": "for ${1:i},${2:v} in ipairs(${3:table_name}) do\n\t${0:print(i,v)}\nend",
+                "description": "for i,v in ipairs()"
+            },
+            {
+                "name": "forp",
+                "snippet": "for ${1:k},${2:v} in pairs(${3:table_name}) do\n\t${0:print(k,v)}\nend",
+                "description": "for k,v in pairs()"
+            },
+            {
+                "name": "fun",
+                "snippet": "function ${1:function_name}( ${2:...} )\n\t${0:-- body}\nend",
+                "description": "function"
+            },
+            {
+                "name": "function",
+                "snippet": "function ${1:function_name}( ${2:...} )\n\t${0:-- body}\nend",
+                "description": "function"
+            },
+            {
+                "name": "getfenv",
+                "snippet": "getfenv(${0:...})",
+                "description": "getfenv ([f])"
+            },
+            {
+                "name": "getmetatable",
+                "snippet": "getmetatable(${1:object})",
+                "description": "getmetatable (object)"
+            },
+            {
+                "name": "if",
+                "snippet": "if ${1:condition} then\n\t${0:-- body}\nend",
+                "description": "if"
+            },
+            {
+                "name": "ifel",
+                "snippet": "if ${1:condition} then\n\t${2:-- body}\nelse\n\t${0:-- body}\nend",
+                "description": "ifel"
+            },
+            {
+                "name": "io.close",
+                "snippet": "io.close(${0:...})",
+                "description": "io.close ([file])",
+                "category": "Input/Output"
+            },
+            {
+                "name": "io.flush",
+                "snippet": "io.flush(${0:...})",
+                "description": "io.flush ()",
+                "category": "Input/Output"
+            },
+            {
+                "name": "io.input",
+                "snippet": "io.input(${0:...})",
+                "description": "io.input ([file])",
+                "category": "Input/Output"
+            },
+            {
+                "name": "io.lines",
+                "snippet": "io.lines(${0:...})",
+                "description": "io.lines ([filename])",
+                "category": "Input/Output"
+            },
+            {
+                "name": "io.open",
+                "snippet": "io.open(${0:...})",
+                "description": "io.open (filename [, mode])",
+                "category": "Input/Output"
+            },
+            {
+                "name": "io.output",
+                "snippet": "io.output(${0:...})",
+                "description": "io.output ([file])",
+                "category": "Input/Output"
+            },
+            {
+                "name": "io.popen",
+                "snippet": "io.popen(${0:...})",
+                "description": "io.popen (prog [, mode])",
+                "category": "Input/Output"
+            },
+            {
+                "name": "io.read",
+                "snippet": "io.read(${0:...})",
+                "description": "io.read (...)",
+                "category": "Input/Output"
+            },
+            {
+                "name": "io.tmpfile",
+                "snippet": "io.tmpfile(${0:...})",
+                "description": "io.tmpfile ()",
+                "category": "Input/Output"
+            },
+            {
+                "name": "io.type",
+                "snippet": "io.type(${0:...})",
+                "description": "io.type (obj)",
+                "category": "Input/Output"
+            },
+            {
+                "name": "io.write",
+                "snippet": "io.write(${0:...})",
+                "description": "io.write (...)",
+                "category": "Input/Output"
+            },
+            {
+                "name": "ipairs",
+                "snippet": "ipairs(${0:...})",
+                "description": "ipairs (t)"
+            },
+            {
+                "name": "load",
+                "snippet": "load(${0:...})",
+                "description": "load (func [, chunkname])"
+            },
+            {
+                "name": "loadfile",
+                "snippet": "loadfile(${0:...})",
+                "description": "loadfile ([filename])"
+            },
+            {
+                "name": "loadstring",
+                "snippet": "loadstring(${0:...})",
+                "description": "loadstring (string [, chunkname])"
+            },
+            {
+                "name": "local",
+                "snippet": "local ${1:x} = ${0:1}",
+                "description": "local x = 1"
+            },
+            {
+                "name": "math.abs",
+                "snippet": "math.abs( ${1:x} )",
+                "description": "math.abs"
+            },
+            {
+                "name": "math.acos",
+                "snippet": "math.acos( ${1:x} )",
+                "description": "math.acos"
+            },
+            {
+                "name": "math.asin",
+                "snippet": "math.asin( ${1:x} )",
+                "description": "math.asin"
+            },
+            {
+                "name": "math.atan",
+                "snippet": "math.atan( ${1:y}${2:[, x]} )",
+                "description": "math.atan"
+            },
+            {
+                "name": "math.atan2",
+                "snippet": "math.atan2(${0:...})",
+                "description": "math.atan2 (y, x)"
+            },
+            {
+                "name": "math.ceil",
+                "snippet": "math.ceil( ${1:x} )",
+                "description": "math.ceil"
+            },
+            {
+                "name": "math.cos",
+                "snippet": "math.cos( ${1:x} )",
+                "description": "math.cos"
+            },
+            {
+                "name": "math.cosh",
+                "snippet": "math.cosh(${0:...})",
+                "description": "math.cosh (x)"
+            },
+            {
+                "name": "math.deg",
+                "snippet": "math.deg( ${1:x} )",
+                "description": "math.deg"
+            },
+            {
+                "name": "math.exp",
+                "snippet": "math.exp( ${1:x} )",
+                "description": "math.exp"
+            },
+            {
+                "name": "math.floor",
+                "snippet": "math.floor( ${1:x} )",
+                "description": "math.floor"
+            },
+            {
+                "name": "math.fmod",
+                "snippet": "math.fmod( ${1:x},${2:y} )",
+                "description": "math.fmod"
+            },
+            {
+                "name": "math.frexp",
+                "snippet": "math.frexp(${0:...})",
+                "description": "math.frexp (x)"
+            },
+            {
+                "name": "math.huge",
+                "snippet": "math.huge(${0:...})",
+                "description": "math.huge"
+            },
+            {
+                "name": "math.ldexp",
+                "snippet": "math.ldexp(${0:...})",
+                "description": "math.ldexp (m, e)"
+            },
+            {
+                "name": "math.log",
+                "snippet": "math.log( ${1:x}${2:[, base]} )",
+                "description": "math.log"
+            },
+            {
+                "name": "math.log10",
+                "snippet": "math.log10(${0:...})",
+                "description": "math.log10 (x)"
+            },
+            {
+                "name": "math.math.randomseed",
+                "snippet": "math.math.randomseed( ${1:x} )",
+                "description": "math.math.randomseed"
+            },
+            {
+                "name": "math.max",
+                "snippet": "math.max( ${1:x},${2:...} )",
+                "description": "math.max"
+            },
+            {
+                "name": "math.maxinteger",
+                "snippet": "math.maxinteger(${0:...})",
+                "description": "math.maxinteger"
+            },
+            {
+                "name": "math.min",
+                "snippet": "math.min( ${1:x},${2:...} )",
+                "description": "math.min"
+            },
+            {
+                "name": "math.mininteger",
+                "snippet": "math.mininteger(${0:...})",
+                "description": "math.mininteger"
+            },
+            {
+                "name": "math.modf",
+                "snippet": "math.modf( ${1:x} )",
+                "description": "math.modf"
+            },
+            {
+                "name": "math.pi",
+                "snippet": "math.pi(${0:...})",
+                "description": "math.pi"
+            },
+            {
+                "name": "math.pow",
+                "snippet": "math.pow(${0:...})",
+                "description": "math.pow (x, y)"
+            },
+            {
+                "name": "math.rad",
+                "snippet": "math.rad(${0:...})",
+                "description": "math.rad (x)"
+            },
+            {
+                "name": "math.random",
+                "snippet": "math.random( ${1:[m]}${2:[, n]} )",
+                "description": "math.random"
+            },
+            {
+                "name": "math.randomseed",
+                "snippet": "math.randomseed(${0:...})",
+                "description": "math.randomseed (x)"
+            },
+            {
+                "name": "math.sin",
+                "snippet": "math.sin( ${1:x} )",
+                "description": "math.sin"
+            },
+            {
+                "name": "math.sinh",
+                "snippet": "math.sinh(${0:...})",
+                "description": "math.sinh (x)"
+            },
+            {
+                "name": "math.sqrt",
+                "snippet": "math.sqrt( ${1:x} )",
+                "description": "math.sqrt"
+            },
+            {
+                "name": "math.tan",
+                "snippet": "math.tan( ${1:x} )",
+                "description": "math.tan"
+            },
+            {
+                "name": "math.tanh",
+                "snippet": "math.tanh(${0:...})",
+                "description": "math.tanh (x)"
+            },
+            {
+                "name": "math.tointeger",
+                "snippet": "math.tointeger( ${1:x} )",
+                "description": "math.tointeger"
+            },
+            {
+                "name": "math.type",
+                "snippet": "math.type( ${1:x} )",
+                "description": "math.type"
+            },
+            {
+                "name": "math.ult",
+                "snippet": "math.ult(${0:...})",
+                "description": "math.ult (m, n)"
+            },
+            {
+                "name": "module",
+                "snippet": "module(${0:...})",
+                "description": "module (name [, ...])"
+            },
+            {
+                "name": "next",
+                "snippet": "next(${1:table}${2:[, index]})",
+                "description": "next (table [, index])"
+            },
+        
+            {
+                "name": "package.config",
+                "snippet": "package.config(${0:...})",
+                "description": "package.config"
+            },
+            {
+                "name": "package.cpath",
+                "snippet": "package.cpath(${0:...})",
+                "description": "package.cpath"
+            },
+            {
+                "name": "package.loaded",
+                "snippet": "package.loaded(${0:...})",
+                "description": "package.loaded"
+            },
+            {
+                "name": "package.loaders",
+                "snippet": "package.loaders(${0:...})",
+                "description": "package.loaders"
+            },
+            {
+                "name": "package.loadlib",
+                "snippet": "package.loadlib(${0:...})",
+                "description": "package.loadlib (libname, funcname)"
+            },
+            {
+                "name": "package.path",
+                "snippet": "package.path(${0:...})",
+                "description": "package.path"
+            },
+            {
+                "name": "package.preload",
+                "snippet": "package.preload(${0:...})",
+                "description": "package.preload"
+            },
+            {
+                "name": "package.searchers",
+                "snippet": "package.searchers(${0:...})",
+                "description": "package.searchers"
+            },
+            {
+                "name": "package.searchpath",
+                "snippet": "package.searchpath(${0:...})",
+                "description": "package.searchpath (name, path [, sep [, rep]])"
+            },
+            {
+                "name": "package.seeall",
+                "snippet": "package.seeall(${0:...})",
+                "description": "package.seeall (module)"
+            },
+            {
+                "name": "pairs",
+                "snippet": "pairs(${0:...})",
+                "description": "pairs (t)"
+            },
+            {
+                "name": "pcall",
+                "snippet": "pcall(${0:...})",
+                "description": "pcall (f, arg1, ...)"
+            },
+            {
+                "name": "print",
+                "snippet": "print(${1:...})",
+                "description": "print(...)"
+            },
+            {
+                "name": "require",
+                "snippet": "require\"${1:module}\"",
+                "description": "require()"
+            },
+            {
+                "name": "ret",
+                "snippet": "return ${1:...}",
+                "description": "return ..."
+            },
+            {
+                "name": "select",
+                "snippet": "select(${1:index}, ${2:...})",
+                "description": "select (index, ···)"
+            },
+            {
+                "name": "setfenv",
+                "snippet": "setfenv(${0:...})",
+                "description": "setfenv (f, table)"
+            },
+            {
+                "name": "setmetatable",
+                "snippet": "setmetatable(${1:table}, ${2:metatable})",
+                "description": "setmetatable (table, metatable)"
+            },
+            {
+                "name": "tonumber",
+                "snippet": "tonumber(${1:e}${2:[, base]})",
+                "description": "tonumber (e [, base])"
+            },
+            {
+                "name": "tostring",
+                "snippet": "tostring(${1:v})",
+                "description": "tostring (v)"
+            },
+            {
+                "name": "type",
+                "snippet": "type(${1:v})",
+                "description": "type (v)"
+            },
+            {
+                "name": "unpack",
+                "snippet": "unpack(${0:...})",
+                "description": "unpack (list [, i [, j]])"
+            },
+            {
+                "name": "xpcall",
+                "snippet": "xpcall(${0:...})",
+                "description": "xpcall (f, err)"
+            },
+            {
+                "name": "sys.publish(...)",
+                "snippet": "sys.publish(${1:...})",
+                "description": "发布内部消息，存储在内部消息队列中\r\n返回值：\r\n无\r\n例子：\r\npublish(\"NET_STATUS_IND\")\r\n"
+            },
+            {
+                "name": "sys.restart(r)",
+                "snippet": "sys.restart(${1:r})",
+                "description": "软件重启\r\n返回值：\r\n无\r\n例子：\r\nsys.restart('程序超时软件重启')\r\n"
+            },
+            {
+                "name": "sys.run()",
+                "snippet": "sys.run()",
+                "description": "run()从底层获取core消息并及时处理相关消息，查询定时器并调度各注册成功的任务线程运行和挂起\r\n返回值：\r\n无\r\n例子：\r\nsys.run()\r\n"
+            },
+            {
+                "name": "sys.setRollBack(flag, secs)",
+                "snippet": "sys.setRollBack(${1:flag},${2: secs})",
+                "description": "设置“lua脚本运行出错时，是否回退原始烧写版本”的功能开关。如果没有调用此接口设置，默认回滚\r\n返回值：\r\nnil\r\n例子：\r\nsys.setRollBack(true)\r\nsys.setRollBack(false)\r\n"
+            },
+            {
+                "name": "sys.subscribe(id, callback)",
+                "snippet": "sys.subscribe(${1:id},${2: callback})",
+                "description": "订阅消息\r\n返回值：\r\n无\r\n例子：\r\nsubscribe(\"NET_STATUS_IND\", callback)\r\n"
+            },
+            {
+                "name": "sys.taskInit(fun, ...)",
+                "snippet": "sys.taskInit(${1:fun},${2: ...})",
+                "description": "创建一个任务线程,在模块最末行调用该函数并注册模块中的任务函数，main.lua导入该模块即可\r\n返回值：\r\nco  返回该任务的线程号\r\n例子：\r\nsys.taskInit(task1,'a','b')\r\n"
+            },
+            {
+                "name": "sys.timerIsActive(val, ...)",
+                "snippet": "sys.timerIsActive(${1:val},${2: ...})",
+                "description": "判断某个定时器是否处于开启状态\r\n返回值：\r\nnumber 开启状态返回true，否则nil"
+            },
+            {
+                "name": "sys.timerLoopStart(fnc, ms, ...)",
+                "snippet": "sys.timerLoopStart(${1:fnc},${2: ms},${3: ...})",
+                "description": "开启一个循环定时器\r\n返回值：\r\nnumber 定时器ID，如果失败，返回nil"
+            },
+            {
+                "name": "sys.timerStart(fnc, ms, ...)",
+                "snippet": "sys.timerStart(${1:fnc},${2: ms},${3: ...})",
+                "description": "开启一个定时器\r\n返回值：\r\nnumber 定时器ID，如果失败，返回nil"
+            },
+            {
+                "name": "sys.timerStop(val, ...)",
+                "snippet": "sys.timerStop(${1:val},${2: ...})",
+                "description": "关闭定时器\r\n返回值：\r\n无\r\n例子：\r\ntimerStop(1)\r\n"
+            },
+            {
+                "name": "sys.timerStopAll(fnc)",
+                "snippet": "sys.timerStopAll(${1:fnc})",
+                "description": "关闭同一回调函数的所有定时器\r\n返回值：\r\n无\r\n例子：\r\ntimerStopAll(cbFnc)\r\n"
+            },
+            {
+                "name": "sys.unsubscribe(id, callback)",
+                "snippet": "sys.unsubscribe(${1:id},${2: callback})",
+                "description": "取消订阅消息\r\n返回值：\r\n无\r\n例子：\r\nunsubscribe(\"NET_STATUS_IND\", callback)\r\n"
+            },
+            {
+                "name": "sys.wait(ms)",
+                "snippet": "sys.wait(${1:ms})",
+                "description": "Task任务延时函数，只能用于任务函数中\r\n返回值：\r\n定时结束返回nil,被其他线程唤起返回调用线程传入的参数\r\n例子：\r\nsys.wait(30)\r\n"
+            },
+            {
+                "name": "sys.waitUntil(id, ms)",
+                "snippet": "sys.waitUntil(${1:id},${2: ms})",
+                "description": "Task任务的条件等待函数（包括事件消息和定时器消息等条件），只能用于任务函数中。\r\n返回值：\r\nresult 接收到消息返回true，超时返回false\r\n例子：\r\nresult, data = sys.waitUntil(\"SIM_IND\", 120000)\r\n"
+            },
+            {
+                "name": "sys.waitUntilExt(id, ms)",
+                "snippet": "sys.waitUntilExt(${1:id},${2: ms})",
+                "description": "Task任务的条件等待函数扩展（包括事件消息和定时器消息等条件），只能用于任务函数中。\r\n返回值：\r\nmessage 接收到消息返回message，超时返回false\r\n例子：\r\nresult, data = sys.waitUntilExt(\"SIM_IND\", 120000)\r\n"
+            },
+            {
+                "name": "table.concat(t,s)",
+                "snippet": "table.concat(${1:t},${2: s})",
+                "description": "表连接\r\n返回值：\r\n  字符串\r\n例子：\r\nfruits = {\"banana\",\"orange\",\"apple\"}\r\n-- 返回 table 连接后的字符串\r\nprint(\"连接后的字符串 \",table.concat(fruits))\r\n--连接后的字符串     bananaorangeapple\r\n\r\n-- 指定连接字符\r\nprint(\"连接后的字符串 \",table.concat(fruits,\", \"))\r\n--连接后的字符串     banana, orange, apple\r\n\r\n-- 指定索引来连接 table\r\nprint(\"连接后的字符串 \",table.concat(fruits,\", \", 2,3))\r\n--连接后的字符串     orange, apple\r\n"
+            },
+            {
+                "name": "table.gsort(t, f)",
+                "snippet": "table.gsort(${1:t},${2: f})",
+                "description": "返回一个迭代器函数,每次调用函数都会返回hash表的排序后的键值对\r\n返回值：\r\nfunction.\r\n例子：\r\ntest = {a=1,f=9,d=2,c=8,b=5}\r\nfor name,line in pairsByKeys(test) do print(name,line) end\r\n"
+            },
+            {
+                "name": "table.insert(t,d)",
+                "snippet": "table.insert(${1:t},${2: d})",
+                "description": "添加table参数\r\n返回值：\r\n  table\r\n例子：\r\nfruits = {\"banana\",\"orange\",\"apple\"}\r\n\r\n-- 在末尾插入\r\ntable.insert(fruits,\"mango\")\r\nprint(\"索引为 4 的元素为 \",fruits[4])\r\n--索引为 4 的元素为     mango\r\n\r\n-- 在索引为 2 的键处插入\r\ntable.insert(fruits,2,\"grapes\")\r\nprint(\"索引为 2 的元素为 \",fruits[2])\r\n--索引为 2 的元素为     grapes\r\n\r\nprint(\"最后一个元素为 \",fruits[5])\r\n--最后一个元素为     mango\r\n"
+            },
+            {
+                "name": "table.remove(t,i)",
+                "snippet": "table.remove(${1:t},${2: i})",
+                "description": "移除table参数\r\n返回值：\r\n  table"
+            },
+            {
+                "name": "string.byte()",
+                "snippet": "string.byte()",
+                "description": "接收控制字符，返回ASCII码\r\n返回值：\r\n  ASCII码\r\n例子：\r\nstring.byte(\"ABCD\")  --65\r\nstring.byte(\"ABCD\",4) --68\r\n"
+            },
+            {
+                "name": "string.char()",
+                "snippet": "string.char()",
+                "description": "接收ASCII码，返回对应的控制字符\r\n返回值：\r\n  字符\r\n例子：\r\nstring.char(97,98,99,100)   --abcd\r\n"
+            },
+            {
+                "name": "string.find()",
+                "snippet": "string.find()",
+                "description": "查找第一个字符串 s 中匹配到的 pattern\r\n返回值：\r\n  返回匹配字符具体位置。不存在则返回 nil\r\n例子：\r\nstring.find(\"Hello Lua user\", \"Lua\", 1)   --7   9\r\n"
+            },
+            {
+                "name": "string.format()",
+                "snippet": "string.format()",
+                "description": "格式化字符串\r\n返回值：\r\n  字符串\r\n例子：\r\nstring.format(\"the value is:%d\",4)   --the value is:4\r\n"
+            },
+            {
+                "name": "string.gsub()",
+                "snippet": "string.gsub()",
+                "description": "字符串替换"
+            },
+            {
+                "name": "string.len()",
+                "snippet": "string.len()",
+                "description": "计算字符串长度\r\n返回值：\r\n  字符串长度\r\n例子：\r\nstring.len(\"abc\")  --3\r\n"
+            },
+            {
+                "name": "string.lower()",
+                "snippet": "string.lower()",
+                "description": "字符串全部转为小写字母\r\n返回值：\r\n  小写字母字符串"
+            },
+            {
+                "name": "string.rep()",
+                "snippet": "string.rep()",
+                "description": "字符串拷贝\r\n返回值：\r\n  字符串\r\n例子：\r\nstring.rep(\"abcd\",2)   --abcdabcd\r\n"
+            },
+            {
+                "name": "string.reverse()",
+                "snippet": "string.reverse()",
+                "description": "字符串反转\r\n返回值：\r\n  反转后的字符串\r\n例子：\r\nstring.reverse(\"Luat\")  --tauL\r\n"
+            },
+            {
+                "name": "string.split(str, delimiter)",
+                "snippet": "string.split(${1:str},${2: delimiter})",
+                "description": "按照指定分隔符分割字符串\r\n返回值：\r\n分割后的字符串列表\r\n例子：\r\n\"123,456,789\":split(',') -> {'123','456','789'}\r\n"
+            },
+            {
+                "name": "string.upper()",
+                "snippet": "string.upper()",
+                "description": "字符串全部转为大写字母\r\n返回值：\r\n  大写字母字符串"
+            },
+       
+            {
+                "name": "io.exists",
+                "snippet": "io.exists(${1:path})",
+                "description": "io.exists(path) - 判断文件是否存在\n传入值：\nstring 文件路径\n返回值：\nbool 存在返回true,否则返回false\n例子：\nlog.info(\"io\", \"file exists\", io.exists(\"/boottime\"))\n",
+                "category": "Input/Output"
+            },
+            {
+                "name": "io.fileSize",
+                "snippet": "io.fileSize(${1:path})",
+                "description": "io.fileSize(path) - 获取文件大小\n传入值：\nstring 文件路径\n返回值：\nint 文件数据,若文件不存在会返回nil\n例子：\nlocal fsize = io.fileSize(\"/bootime\")\nif fsize and fsize > 1024 then\n  log.info(\"io\", \"file size\", fsize)\nend\n",
+                "category": "Input/Output"
+            },
+            {
+                "name": "io.readFile",
+                "snippet": "io.readFile(${1:path},${2:mode},${3:offset},${4:len})",
+                "description": "io.readFile(path, mode, offset, len) - 读取整个文件,请注意内存消耗\n传入值：\nstring 文件路径\nstring 读取模式, 默认 \"rb\"\nint 起始位置,默认0\nint 读取长度,默认整个文件\n返回值：\nstring 文件数据,若文件不存在会返回nil\n例子：\nlocal data = io.readFile(\"/bootime\")\n-- 注意: offset和len参数是 2023.6.6添加的\n-- 读取abc.txt, 先跳过128字节, 然后读取512字节数据\nlocal data = io.readFile(\"/abc.txt\", \"rb\", 128, 512)\n",
+                "category": "Input/Output"
+            },
+            {
+                "name": "io.writeFile",
+                "snippet": "io.writeFile(${1:path},${2:data})",
+                "description": "io.writeFile(path, data) - 将数据写入文件\n传入值：\nstring 文件路径\nstring 数据\n返回值：\nboolean 成功返回true, 否则返回false\n例子：\nio.writeFile(\"/bootime\", \"1\")\n",
+                "category": "Input/Output"
+            },
+            {
+                "name": "io.fill",
+                "snippet": "io.fill(${1:buff},${2:offset},${3:len})",
+                "description": "io.fill(buff, offset, len) - 读取文件并填充到zbuff内,但不移动指针位置\n传入值：\nuserdata zbuff实体\nint 写入的位置,默认是0\nint 写入的长度,默认是zbuff的len减去offset\n返回值：\nboolean 成功返回true,否则返回false\nint 返回实际读取到的长度，如果小于0也说明是读取失败了\n例子：\nlocal buff = zbuff.create(1024)\nlocal f = io.open(\"/sd/test.txt\")\nif f then\n  f:fill(buff)\nend\n",
+                "category": "Input/Output"
+            },
+            {
+                "name": "io.mkfs",
+                "snippet": "io.mkfs(${1:path})",
+                "description": "io.mkfs(path) - 格式化文件系统,需指定挂载点\n传入值：\nstring 挂载点\n返回值：\nbool 成功与否\nint 底层返回值\n例子：\nlocal ret, errio = io.mkfs(\"/sd\")\nlog.info(\"fs\", \"mkfs\", ret, errio)\n",
+                "category": "Input/Output"
+            },
+            {
+                "name": "io.mkdir",
+                "snippet": "io.mkdir(${1:path})",
+                "description": "io.mkdir(path) - 创建文件夹\n传入值：\nstring 需要建立的目录路径\n返回值：\nbool 成功与否\nint 底层返回值\n例子：\nlocal ret, errio = io.mkdir(\"/data/\")\nlog.info(\"fs\", \"mkdir\", ret, errio)\n",
+                "category": "Input/Output"
+            },
+            {
+                "name": "io.rmdir",
+                "snippet": "io.rmdir(${1:path})",
+                "description": "io.rmdir(path) - 删除文件夹\n传入值：\nstring 需要移除的目录路径\n返回值：\nbool 成功与否\nint 底层返回值\n例子：\nlocal ret, errio = io.rmdir(\"/data/\")\nlog.info(\"fs\", \"rmdir\", ret, errio)\n",
+                "category": "Input/Output"
+            },
+            {
+                "name": "io.lsdir",
+                "snippet": "io.lsdir(${1:path},${2:len},${3:offset})",
+                "description": "io.lsdir(path, len, offset) - 列出目录下的文件\n传入值：\nstring 需要枚举的目录路径\nint 最大长度, 默认10, 最高50\nint 偏移量, 默认0, 当目录文件很多时分页查询用\n返回值：\nbool 成功与否\nint 底层返回值\n例子：\nlocal ret, data = io.lsdir(\"/data/\", 10, 0)\nif ret then\n  log.info(\"fs\", \"lsdir\", json.encode(data))\nelse\n  log.info(\"fs\", \"lsdir\", \"fail\", ret, data)\nend\n",
+                "category": "Input/Output"
+            },
+            {
+                "name": "io.lsmount",
+                "snippet": "io.lsmount()",
+                "description": "io.lsmount() - 列出所有挂载点\n返回值：\ntable 挂载点列表\n例子：\nlocal data = io.lsmount()\nlog.info(\"fs\", \"lsmount\", json.encode(data))\n",
+                "category": "Input/Output"
+            },
+         
+            {
+                "name": "json.encode",
+                "snippet": "json.encode(${1:obj},${2:t})",
+                "description": "json.encode(obj,t) - 将对象序列化为json字符串\n传入值：\nobj 需要序列化的对象\nstring 浮点数精度和模式,这项不存在的时候,为默认值\"7f\",数字只支持\"0~14\",模式只支持\"f/g\"\n返回值：\nstring 序列化后的json字符串, 失败的话返回nil\nstring 序列化失败的报错信息\n例子：\njson.encode(obj)-->浮点数用%.7g的方式转换为字符串\njson.encode(obj,\"12f\")-->浮点数用%.12f的方式转换为字符串\n\n-- 2024.1.9 起, 默认使用7f格式化浮点数\n-- 之前的版本使用 7g格式化浮动数\n"
+            },
+            {
+                "name": "json.decode",
+                "snippet": "json.decode(${1:str})",
+                "description": "json.decode(str) - 将字符串反序列化为对象\n传入值：\nstring 需要反序列化的json字符串\n返回值：\nobj 反序列化后的对象(通常是table), 失败的话返回nil\nresult 成功返回1,否则返回0\nerr 反序列化失败的报错信息\n例子：\njson.decode(\"[1,2,3,4,5,6]\")\n"
+            },
+        
+            {
+                "name": "sqlite3.open",
+                "snippet": "sqlite3.open(${1:path})",
+                "description": "sqlite3.open(path) - 打开数据库\n传入值：\nstring 数据库文件路径,必须填写,不存在就会自动新建\n返回值：\nuserdata 数据库指针,是否就返回nil\n例子：\nlocal db = sqlite3.open(\"/test.db\")\nif db then\n   -- 数据库操作xxxx\n\n    -- 用完必须关掉\n    sqlite3.close(db)\nend\n"
+            },
+            {
+                "name": "sqlite3.exec",
+                "snippet": "sqlite3.exec(${1:db},${2:sql})",
+                "description": "sqlite3.exec(db, sql) - 执行SQL语句\n传入值：\nuserdata 通过sqlite3.open获取到的数据库指针\nstring SQL字符串,必须填写\n返回值：\nboolean 成功返回true,否则返回nil\ntable 成功返回查询结果(若有),否则返回报错的字符串\n"
+            },
+            {
+                "name": "sqlite3.close",
+                "snippet": "sqlite3.close(${1:db})",
+                "description": "sqlite3.close(db) - 关闭数据库\n传入值：\nuserdata 通过sqlite3.open获取到的数据库指针\n返回值：\nboolean 成功返回true,否则返回nil\n"
+            },
+          
+            {
+                "name": "string.toHex",
+                "snippet": "string.toHex(${1:str},${2:separator})",
+                "description": "string.toHex(str, separator) - 将字符串转成HEX\n传入值：\nstring 需要转换的字符串\nstring 分隔符, 默认为\"\"\n返回值：\nstring HEX字符串\nnumber HEX字符串的长度\n例子：\nstring.toHex(\"\\1\\2\\3\") --> \"010203\" 6\nstring.toHex(\"123abc\") --> \"313233616263\" 12\nstring.toHex(\"123abc\", \" \") --> \"31 32 33 61 62 63 \" 12\n"
+            },
+            {
+                "name": "string.fromHex",
+                "snippet": "string.fromHex(${1:hex})",
+                "description": "string.fromHex(hex) - 将HEX转成字符串\n传入值：\nstring hex,16进制组成的串\n返回值：\nstring 字符串\n例子：\nstring.fromHex(\"010203\")       -->  \"\\1\\2\\3\"\nstring.fromHex(\"313233616263\") -->  \"123abc\"\n"
+            },
+            {
+                "name": "string.split",
+                "snippet": "string.split(${1:str},${2:delimiter},${3:keepEmtry})",
+                "description": "string.split(str, delimiter, keepEmtry) - 按照指定分隔符分割字符串\n传入值：\nstring 输入字符串\nstring 分隔符,可选,默认 \",\"\nbool 是否保留空白片段,默认为false,不保留. 2023.4.11之后的固件可用\n返回值：\ntable 分割后的字符串表\n例子：\nlocal tmp = string.split(\"123,233333,122\")\nlog.info(\"tmp\", json.encode(tmp))\nlocal tmp = (\"123,456,789\"):split(',') --> {'123','456','789'}\nlog.info(\"tmp\", json.encode(tmp))\n\n-- 保留空片段, 2023.4.11之后的固件可用\nlocal str = \"/tmp//def/1234/\"\nlocal tmp = str:split(\"/\", true) \nlog.info(\"str.split\", #tmp, json.encode(tmp))\n"
+            },
+            {
+                "name": "string.toValue",
+                "snippet": "string.toValue(${1:str})",
+                "description": "string.toValue(str) - 返回字符串tonumber的转义字符串(用来支持超过31位整数的转换)\n传入值：\nstring 输入字符串\n返回值：\nstring 转换后的二进制字符串\nnumber 转换了多少个字符\n例子：\nstring.toValue(\"123456\") --> \"\\1\\2\\3\\4\\5\\6\"  6\nstring.toValue(\"123abc\") --> \"\\1\\2\\3\\a\\b\\c\"  6\n"
+            },
+            {
+                "name": "string.urlEncode",
+                "snippet": "string.urlEncode(${1:\"123abc\"})",
+                "description": "string.urlEncode(\"123 abc\") - 将字符串进行url编码转换\n传入值：\nstring 需要转换的字符串\nint mode:url编码的转换标准,\n"
+            },
+            {
+                "name": "string.toBase64",
+                "snippet": "string.toBase64(${1:str})",
+                "description": "string.toBase64(str) - 将字符串进行base64编码\n传入值：\nstring 需要转换的字符串\n返回值：\nstring 解码后的字符串,如果解码失败会返回空字符串\n"
+            },
+            {
+                "name": "string.fromBase64",
+                "snippet": "string.fromBase64(${1:str})",
+                "description": "string.fromBase64(str) - 将字符串进行base64解码\n传入值：\nstring 需要转换的字符串\n返回值：\nstring 解码后的字符串,如果解码失败会返回空字符串\n"
+            },
+            {
+                "name": "string.toBase32",
+                "snippet": "string.toBase32(${1:str})",
+                "description": "string.toBase32(str) - 将字符串进行base32编码\n传入值：\nstring 需要转换的字符串\n返回值：\nstring 解码后的字符串,如果解码失败会返回0长度字符串\n"
+            },
+            {
+                "name": "string.fromBase32",
+                "snippet": "string.fromBase32(${1:str})",
+                "description": "string.fromBase32(str) - 将字符串进行base32解码\n传入值：\nstring 需要转换的字符串\n返回值：\nstring 解码后的字符串,如果解码失败会返回0长度字符串\n"
+            },
+            {
+                "name": "string.startsWith",
+                "snippet": "string.startsWith(${1:str},${2:prefix})",
+                "description": "string.startsWith(str, prefix) - 判断字符串前缀\n传入值：\nstring 需要检查的字符串\nstring 前缀字符串\n返回值：\nbool 真为true, 假为false\n例子：\nlocal str = \"abc\"\nlog.info(\"str\", str:startsWith(\"a\"))\nlog.info(\"str\", str:startsWith(\"b\"))\n"
+            },
+            {
+                "name": "string.endsWith",
+                "snippet": "string.endsWith(${1:str},${2:suffix})",
+                "description": "string.endsWith(str, suffix) - 判断字符串后缀\n传入值：\nstring 需要检查的字符串\nstring 后缀字符串\n返回值：\nbool 真为true, 假为false\n例子：\nlocal str = \"abc\"\nlog.info(\"str\", str:endsWith(\"c\"))\nlog.info(\"str\", str:endsWith(\"b\"))\n"
+            },
+            {
+                "name": "string.trim",
+                "snippet": "string.trim(${1:str},${2:ltrim},${3:rtrim})",
+                "description": "string.trim(str, ltrim, rtrim) - 裁剪字符串,去除头尾的空格\n传入值：\nstring 需要处理的字符串\nbool 清理前缀,默认为true\nbool 清理后缀,默认为true\n返回值：\nstring 清理后的字符串\n例子：\nlocal str = \"\\r\\nabc\\r\\n\"\nlog.info(\"str\", string.trim(str)) -- 打印 \"abc\"\nlog.info(\"str\", str:trim())       -- 打印 \"abc\"\nlog.info(\"str\", #string.trim(str, false, true)) -- 仅裁剪后缀,所以长度是5\n"
+            },
+            {
+                "name": "sys.wait",
+                "snippet": "sys.wait(${1:timeout})",
+                "description": "sys.wait(timeout) - Task协程等待指定时长\n传入值：\nint 等待时长,单位毫秒,必须大于0,否则无效\n返回值：\nany 通常为nil,除非主动被唤醒(通常不会)\n例子：\nsys.taskInit(function()\n    while 1 do\n        sys.wait(500)\n    end\nend)\n"
+            },
+            {
+                "name": "sys.waitUntil",
+                "snippet": "sys.waitUntil(${1:topic},${2:timeout})",
+                "description": "sys.waitUntil(topic, timeout) - Task协程等待指定时长或者特定的topic\n传入值：\nstring 事件topic\nint 等待时长,单位毫秒,必须大于0,否则无效\n返回值：\nboolean 如果是超时,返回false,否则返回true\nany 对应topic的内容\n例子：\nsys.taskInit(function()\n    // do something\n    local result, data = sys.waitUntil(\"NET_READY\", 30000)\n    // do something else\nend)\n"
+            },
+            {
+                "name": "sys.taskInit",
+                "snippet": "sys.taskInit(${1:func},${2:arg1},${3:arg2},${4:argN})",
+                "description": "sys.taskInit(func, arg1, arg2, argN) - 创建一个Task协程\n传入值：\nfunction 待执行的函数,可以是匿名函数, 也可以是local或全局函数\nany 需要传递的参数1,可选 \nany 需要传递的参数2,可选 \nany 需要传递的参数N,可选 \n返回值：\ntask 协程对象\n例子：\nsys.taskInit(function(a, b, c)\n    log.info(\"task\", a, b, c) -- 打印 task A B C\nend, \"A\", \"B\", \"N\")\n"
+            },
+            {
+                "name": "sys.timerStart",
+                "snippet": "sys.timerStart(${1:func},${2:timeout},${3:arg1},${4:arg2},${5:argN})",
+                "description": "sys.timerStart(func, timeout, arg1, arg2, argN) - 创建一个定时器.非Task,函数里不能直接sys.waitXXX\n传入值：\nfunction 待执行的函数,可以是匿名函数, 也可以是local或全局函数\nint 延时时长,单位毫秒\nany 需要传递的参数1,可选 \nany 需要传递的参数2,可选 \nany 需要传递的参数N,可选 \n返回值：\nint 定时器id\n例子：\nsys.timerStart(function(a, b, c)\n    log.info(\"task\", a, b, c) -- 1000毫秒后才会执行, 打印 task A B C\nend, 1000, \"A\", \"B\", \"N\")\n"
+            },
+            {
+                "name": "sys.timerLoopStart",
+                "snippet": "sys.timerLoopStart(${1:func},${2:timeout},${3:arg1},${4:arg2},${5:argN})",
+                "description": "sys.timerLoopStart(func, timeout, arg1, arg2, argN) - 创建一个循环定时器.非Task,函数里不能直接sys.waitXXX\n传入值：\nfunction 待执行的函数,可以是匿名函数, 也可以是local或全局函数\nint 延时时长,单位毫秒\nany 需要传递的参数1,可选 \nany 需要传递的参数2,可选 \nany 需要传递的参数N,可选 \n返回值：\nint 定时器id\n例子：\nsys.timerLoopStart(function(a, b, c)\n    log.info(\"task\", a, b, c) -- 1000毫秒后才会执行, 打印 task A B C\nend, 1000, \"A\", \"B\", \"N\")\n"
+            },
+            {
+                "name": "sys.timerStop",
+                "snippet": "sys.timerStop(${1:id})",
+                "description": "sys.timerStop(id) - 关闭一个定时器.\n传入值：\nint 定时器id\n返回值：\nnil 无返回值\n例子：\nlocal tcount = 0\nlocal tid \ntid = sys.timerLoopStart(function(a, b, c)\n    log.info(\"task\", a, b, c) -- 1000毫秒后才会执行, 打印 task A B C\n    if tcount > 10 then\n        sys.timerStop(tid)\n    end\n    tcount = tcount + 1\nend, 1000, \"A\", \"B\", \"N\")\n"
+            },
+            {
+                "name": "sys.timerStopAll",
+                "snippet": "sys.timerStopAll(${1:fnc})",
+                "description": "sys.timerStopAll(fnc) - 关闭同一回调函数的所有定时器.\n传入值：\nfunction fnc回调的函数\n返回值：\nnil 无返回值\n例子：\n-- 关闭回调函数为publicTimerCbFnc的所有定时器\nlocal function publicTimerCbFnc(tag)\nlog.info(\"publicTimerCbFnc\",tag)\nend\nsys.timerStart(publicTimerCbFnc,8000,\"first\")\nsys.timerStart(publicTimerCbFnc,8000,\"second\")\nsys.timerStart(publicTimerCbFnc,8000,\"third\")\nsys.timerStopAll(publicTimerCbFnc)\n"
+            },
+            {
+                "name": "sys.publish",
+                "snippet": "sys.publish(${1:topic},${2:arg1},${3:agr2},${4:argN})",
+                "description": "sys.publish(topic, arg1, agr2, argN) - 往特定topic通道发布一个消息\n传入值：\nstring topic的值\nany 附带的参数1\nany 附带的参数2\nany 附带的参数N\n返回值：\nnil 无返回值\n例子：\nsys.publish(\"BT_READY\", false)\n"
+            },
+            {
+                "name": "sys.subscribe",
+                "snippet": "sys.subscribe(${1:topic},${2:func})",
+                "description": "sys.subscribe(topic, func) - 订阅一个topic通道\n传入值：\nstring topic的值\nfunction 回调函数, 注意, 不能直接使用sys.waitXXX\n返回值：\nnil 无返回值\n例子：\nlocal function bt_cb(state)\n    log.info(\"bt\", state)\nend\nsys.subscribe(\"BT_READY\", bt_cb)\nsys.subscribe(\"BT_READY\", function(state)\n    log.info(\"sys\", \"Got BT_READY\", state)\nend)\n"
+            },
+            {
+                "name": "sys.unsubscribe",
+                "snippet": "sys.unsubscribe(${1:topic},${2:func})",
+                "description": "sys.unsubscribe(topic, func) - 取消订阅topic通道\n传入值：\nstring topic的值\nfunction 回调函数, 注意, 不能直接使用sys.waitXXX\n返回值：\nnil 无返回值\n例子：\nlocal function bt_cb(state)\n    log.info(\"bt\", state)\nend\nsys.unsubscribe(\"BT_READY\", bt_cb)\n"
+            },
+            {
+                "name": "sys.run",
+                "snippet": "sys.run()",
+                "description": "sys.run() - sys库主循环方法,仅允许在main.lua的末尾调用\n返回值：\nnil 无返回值. 这个方法几乎不可能返回.\n例子：\n-- 总是main.lua的结尾一句,将来也许会简化掉\nsys.run()\n-- 之后的代码不会被执行\n"
+            },
+            {
+                "name": "sysplus.waitMsg",
+                "snippet": "sysplus.waitMsg(${1:taskName},${2:target},${3:timeout})",
+                "description": "sysplus.waitMsg(taskName, target, timeout) - 等待接收一个目标消息\n传入值：\nstring 任务名称，用于唤醒任务的id\nstring 目标消息，如果为nil，则表示接收到任意消息都会退出\nint 超时时间，如果为nil，则表示无超时，永远等待\n返回值：\ntable 成功返回table型的msg，超时返回false\n例子：\n-- 等待任务\nsysplus.waitMsg('a', 'b', 1000)\n-- 注意, 本函数会自动注册成全局函数 sys_wait\n"
+            },
+            {
+                "name": "sysplus.sendMsg",
+                "snippet": "sysplus.sendMsg(${1:taskName},${2:target},${3:arg2},${4:arg3},${5:arg4})",
+                "description": "sysplus.sendMsg(taskName, target, arg2, arg3, arg4) - 向目标任务发送一个消息\n传入值：\nstring 任务名称，用于唤醒任务的id\nany 消息中的参数1，同时也是waitMsg里的target\nany 消息中的参数2\nany 消息中的参数3\nany 消息中的参数4\n返回值：\nbool 成功返回true, 否则返回false\n例子：\n-- 向任务a,目标b发送消息\nsysplus.sendMsg('a', 'b')\n-- 注意, 本函数会自动注册成全局函数 sys_send\n"
+            },
+            {
+                "name": "sysplus.taskInitEx",
+                "snippet": "sysplus.taskInitEx(${1:fun},${2:taskName},${3:cbFun},${4:...})",
+                "description": "sysplus.taskInitEx(fun, taskName, cbFun, ...) - 创建一个任务线程,在模块最末行调用该函数并注册模块中的任务函数,main.lua导入该模块即可\n传入值：\nfunction 任务函数名,用于resume唤醒时调用\nstring 任务名称,用于唤醒任务的id\nfunction 接收到非目标消息时的回调函数\nany ... 任务函数fun的可变参数\n返回值：\nnumber 返回该任务的线程号\n例子：\nsysplus.taskInitEx(task1,'a',callback)\n"
+            },
+            {
+                "name": "sysplus.taskDel",
+                "snippet": "sysplus.taskDel(${1:taskName})",
+                "description": "sysplus.taskDel(taskName) - 删除由taskInitEx创建的任务线程\n传入值：\nstring 任务名称,用于唤醒任务的id\n例子：\nsysplus.taskDel('a')\n"
+            },
+            {
+                "name": "sysplus.cleanMsg",
+                "snippet": "sysplus.cleanMsg(${1:taskName})",
+                "description": "sysplus.cleanMsg(taskName) - 清除指定task的消息队列\n传入值：\nstring 任务名称\n例子：\nsysplus.cleanMsg('a')\n"
+            },
+          
+            {
+                "name": "buzzer.on",
+                "snippet": "buzzer.on(${1:1000})",
+                "description": "buzzer.on(frequency) - Start continuous tone at specified frequency\nOptimized for real-time sensor data processing\nParameters:\n- frequency: Tone frequency in Hz (1-20000, default: 1000)\nExample: buzzer.on(sensor_value) for anomaly detection"
+            },
+            {
+                "name": "buzzer.off",
+                "snippet": "buzzer.off()",
+                "description": "buzzer.off() - Emergency stop buzzer and clear all queued commands\nProvides immediate hardware-level stop for real-time applications\nClears command queue and stops any running sequences"
+            },
+            {
+                "name": "buzzer.play",
+                "snippet": "buzzer.play({freq=${1:3000}, play_duration=${2:1000}, pause_duration=${3:0}, times=${4:1}, blocking=${5:false}})",
+                "description": "buzzer.play(opts) - Play a tone with custom options\nParameters:\n- freq: frequency in Hz (e.g. 3000)\n- play_duration: duration in milliseconds (e.g. 1000)\n- pause_duration: pause between repetitions in ms (e.g. 0)\n- times: number of repetitions\n- blocking: wait until tone finishes (true/false)"
+            },
+            {
+                "name": "buzzer.stop",
+                "snippet": "buzzer.stop()",
+                "description": "buzzer.stop() - Stop any currently playing tone immediately"
+            },
+            {
+                "name": "buzzer.force_stop",
+                "snippet": "buzzer.force_stop()",
+                "description": "buzzer.force_stop() - Force stop all buzzer activity immediately\nClears queue and stops hardware output with blocking wait"
+            },
+            {
+                "name": "buzzer.success",
+                "snippet": "buzzer.success({freq=${1:2700}, play_duration=${2:100}, pause_duration=${3:25}, times=${4:2}, blocking=${5:false}})",
+                "description": "buzzer.success(opts) - Play a success tone\nDefault: 2700Hz, short beep x2\nParameters:\n- Same as buzzer.play"
+            },
+            {
+                "name": "buzzer.error",
+                "snippet": "buzzer.error({freq=${1:200}, play_duration=${2:1000}, times=${3:1}, blocking=${4:false}})",
+                "description": "buzzer.error(opts) - Play an error tone\nDefault: 200Hz, long beep\nParameters:\n- Same as buzzer.play"
+            },
+            {
+                "name": "buzzer.play_music",
+                "snippet": "buzzer.play_music(\"${1:C41D42E43}\", ${2:false})",
+                "description": "buzzer.play_music(music_str, blocking) - Play a music string where each note is followed by a duration digit\nExample: \"C41D42E43\"\n- blocking: true or false\nNon-blocking music can be interrupted with buzzer.off()"
+            },
+            {
+                "name": "buzzer.is_playing",
+                "snippet": "buzzer.is_playing()",
+                "description": "buzzer.is_playing() - Returns true if a tone or music is currently playing"
+            },
+            {
+                "name": "buzzer.set_callback",
+                "snippet": "buzzer.set_callback(\"${1:step|done}\", ${2:function(data) print(data.playing, data.freq) end})",
+                "description": "buzzer.set_callback(type, callback) - Set a callback for tone events\nTypes:\n- \"step\": called before/after each tone step with `{ playing, freq }`\n- \"done\": called when playback completes"
+            },
+            {
+                "name": "buzzer.set_speed",
+                "snippet": "buzzer.set_speed(${1:speed})",
+                "description": "buzzer.set_speed(speed) - Sets the note playback speed (used by play_music)\n- speed: Base unit in milliseconds (e.g. 80)"
+            },
+            {
+                "name": "buzzer.notes",
+                "snippet": "buzzer.notes.${1:C4}",
+                "description": "buzzer.notes - Access to musical note frequencies\nAvailable notes: C1-C8, D1-D8, E1-E8, F1-F8, G1-G8, A1-A8, B1-B8\nExample: buzzer.notes.C4 = 262Hz, buzzer.notes.A4 = 440Hz"
+            },
+          
+                {
+        "name": "millis",
+        "snippet": "millis()",
+        "description": "millis() - Returns the number of milliseconds since the program started."
+    },
+    {
+        "name": "micros",
+        "snippet": "micros()",
+        "description": "micros() - Returns the number of microseconds since the program started."
+    },
+    {
+        "name": "delay",
+        "snippet": "delay(${1:ms})",
+        "description": "delay(ms) - Pause execution for a specified time in milliseconds."
+    },
+    {
+        "name": "delayMicroseconds",
+        "snippet": "delayMicroseconds(${1:us})",
+        "description": "delayMicroseconds(us) - Pause execution for a specified time in microseconds."
+    },
+    {
+        "name": "pinMode",
+        "snippet": "pinMode(${1:pin}, ${2:mode})",
+        "description": "pinMode(pin, mode) - Set the mode of a pin (INPUT, OUTPUT, etc.)."
+    },
+    {
+        "name": "digitalWrite",
+        "snippet": "digitalWrite(${1:pin}, ${2:value})",
+        "description": "digitalWrite(pin, value) - Set a digital pin to HIGH or LOW."
+    },
+    {
+        "name": "digitalRead",
+        "snippet": "digitalRead(${1:pin})",
+        "description": "digitalRead(pin) - Read the value from a digital pin."
+    },
+    {
+        "name": "analogRead",
+        "snippet": "analogRead(${1:pin})",
+        "description": "analogRead(pin) - Read the value from an analog pin."
+    },
+    {
+        "name": "analogWrite",
+        "snippet": "analogWrite(${1:pin}, ${2:value})",
+        "description": "analogWrite(pin, value) - Write a PWM value to a pin (not implemented on ESP32)."
+    },
+    {
+        "name": "analogReadResolution",
+        "snippet": "analogReadResolution(${1:bits})",
+        "description": "analogReadResolution(bits) - Set the resolution for analogRead."
+    },
+    {
+        "name": "analogWriteResolution",
+        "snippet": "analogWriteResolution(${1:bits})",
+        "description": "analogWriteResolution(bits) - Set the resolution for analogWrite."
+    },
+    {
+        "name": "pulseIn",
+        "snippet": "pulseIn(${1:pin}, ${2:value}, ${3:timeout})",
+        "description": "pulseIn(pin, value, timeout) - Measures the length (in microseconds) of a pulse on the pin."
+    },
+    {
+        "name": "pulseInLong",
+        "snippet": "pulseInLong(${1:pin}, ${2:value}, ${3:timeout})",
+        "description": "pulseInLong(pin, value, timeout) - Like pulseIn, but handles longer durations."
+    },
+    {
+        "name": "random",
+        "snippet": "random(${1:min}, ${2:max})",
+        "description": "random(min, max) - Returns a random number between min and max-1."
+    },
+    {
+        "name": "randomSeed",
+        "snippet": "randomSeed(${1:seed})",
+        "description": "randomSeed(seed) - Sets the seed for the random number generator."
+    },
+    {
+        "name": "map",
+        "snippet": "map(${1:value}, ${2:fromLow}, ${3:fromHigh}, ${4:toLow}, ${5:toHigh})",
+        "description": "map(value, fromLow, fromHigh, toLow, toHigh) - Re-maps a number from one range to another."
+    },
+    {
+        "name": "constrain",
+        "snippet": "constrain(${1:value}, ${2:min}, ${3:max})",
+        "description": "constrain(value, min, max) - Constrains a number to be within a range."
+    },
+    {
+        "name": "print",
+        "snippet": "print(${1:...})",
+        "description": "print(...) - Print to Serial without newline."
+    },
+    {
+        "name": "println",
+        "snippet": "println(${1:...})",
+        "description": "println(...) - Print to Serial with newline."
+    },
+    {
+        "name": "typeof",
+        "snippet": "typeof(${1:val})",
+        "description": "typeof(val) - Returns the type of a value."
+    },
+    {
+        "name": "tostring",
+        "snippet": "tostring(${1:val})",
+        "description": "tostring(val) - Converts a value to string."
+    },
+    {
+        "name": "tonumber",
+        "snippet": "tonumber(${1:val})",
+        "description": "tonumber(val) - Converts a string to a number."
+    },
+    {
+        "name": "len",
+        "snippet": "len(${1:val})",
+        "description": "len(val) - Gets length of string or table."
+    },
+    {
+        "name": "keys",
+        "snippet": "keys(${1:table})",
+        "description": "keys(table) - Returns a list of all keys in a table."
+    },
+    {
+        "name": "values",
+        "snippet": "values(${1:table})",
+        "description": "values(table) - Returns a list of all values in a table."
+    },
+    {
+        "name": "dump",
+        "snippet": "dump(${1:...})",
+        "description": "dump(...) - Debug print of one or more Lua values."
+    }
+    ,
+        {
+        "name": "ble_print",
+        "snippet": "ble_print(${1:...})",
+        "description": "ble_print(...) - Print to BLE without newline. Useful for debugging BLE applications."
+    }
+        ]
+    }
+}

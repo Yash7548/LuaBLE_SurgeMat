@@ -1,0 +1,3 @@
+In line number 711 we have to give spifssize since the webpage has this command    
+    
+    else if (strcmp(msgtype, "spiffssizefssize") == 0)

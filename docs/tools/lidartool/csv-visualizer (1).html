@@ -1,0 +1,2993 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV Data Visualizer</title>
+    
+    <!-- External Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/date-fns/2.30.0/index.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/2.0.1/chartjs-plugin-zoom.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #1a1a1a;
+            --bg-tertiary: #2a2a2a;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --border: #333;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Controls */
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .control-group {
+            background: var(--bg-secondary);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .control-group h3 {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Buttons */
+        .btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: #3a3a3a;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-icon {
+            padding: 8px;
+            border-radius: 50%;
+        }
+
+        /* File Input */
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-input-label {
+            display: block;
+            padding: 12px;
+            background: var(--bg-tertiary);
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .file-input-label:hover {
+            border-color: var(--accent);
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        /* Chart Container */
+        .chart-container {
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            position: relative;
+            height: 500px;
+        }
+
+        .chart-container.selection-mode {
+            cursor: crosshair;
+        }
+        
+        .chart-container.selection-mode canvas {
+            cursor: crosshair !important;
+        }
+
+        .chart-container.selection-mode::after {
+            content: 'Click and drag to select • Hold Ctrl to zoom area';
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: var(--text-secondary);
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 11px;
+            pointer-events: none;
+        }
+
+        /* Selection Overlay */
+        .selection-overlay {
+            position: absolute;
+            background: rgba(59, 130, 246, 0.2);
+            border: 2px dashed var(--accent);
+            border-radius: 4px;
+            pointer-events: none;
+            display: none;
+        }
+
+        .selection-overlay::before,
+        .selection-overlay::after {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .selection-overlay::before {
+            left: -5px;
+        }
+
+        .selection-overlay::after {
+            right: -5px;
+        }
+
+        .selection-mode-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--accent);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            display: none;
+            z-index: 10;
+        }
+
+        .selection-mode .selection-mode-indicator {
+            display: block;
+        }
+
+        /* Snap indicators */
+        .snap-indicator {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: white;
+            border: 2px solid var(--accent);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 10;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Player Controls */
+        .player-controls {
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .play-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .play-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .timeline {
+            flex: 1;
+            position: relative;
+            height: 40px;
+            background: var(--bg-tertiary);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .timeline-progress {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            left: 10px;
+            right: 10px;
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+        }
+
+        .timeline-current {
+            position: absolute;
+            height: 100%;
+            background: var(--accent);
+            border-radius: 2px;
+            transition: width 0.1s linear;
+        }
+
+        .timeline-handle {
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Markers */
+        .marker {
+            position: absolute;
+            top: 0;
+            width: 2px;
+            height: 100%;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .marker:hover {
+            width: 4px;
+        }
+
+        .marker-label {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-tertiary);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .marker:hover .marker-label {
+            opacity: 1;
+        }
+
+        .marker-section {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            opacity: 0.2;
+            cursor: pointer;
+        }
+
+        .marker-section:hover {
+            opacity: 0.3;
+        }
+
+        .marker-section.highlight {
+            opacity: 0.4 !important;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+        }
+
+        /* Filters */
+        .filters {
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .filter-item {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-item label {
+            display: block;
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+
+        .filter-item input {
+            width: 100%;
+            padding: 8px 12px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        /* Speed Control */
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .speed-control select {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        /* Marker List */
+        .marker-list {
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .marker-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            background: var(--bg-tertiary);
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+
+        .marker-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+
+        .marker-info {
+            flex: 1;
+        }
+
+        .marker-name {
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+
+        .marker-time {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        /* Textarea styling */
+        textarea {
+            resize: vertical;
+            line-height: 1.5;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+        }
+
+        .color-picker {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .color-option {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+
+        .color-option.selected {
+            border-color: white;
+        }
+
+        /* Stats */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Zoom indicator */
+        .zoom-indicator {
+            background: var(--bg-secondary);
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            align-items: center;
+            gap: 15px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .zoom-indicator.active {
+            display: flex;
+        }
+
+        .zoom-bar {
+            flex: 1;
+            height: 4px;
+            background: var(--bg-tertiary);
+            border-radius: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .zoom-bar-fill {
+            position: absolute;
+            height: 100%;
+            background: var(--accent);
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        /* Loading */
+        .loading {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            padding: 16px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1100;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--success);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .toast-message {
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        /* Status Indicator */
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .status-indicator.connected {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .status-indicator.disconnected {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .status-indicator.recording {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Recording button states */
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .recording-active {
+            background: var(--danger) !important;
+            animation: pulse 2s infinite;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-tertiary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>CSV Data Visualizer</h1>
+            <p style="color: var(--text-secondary);">Real-time visualization with BLE recording and marker annotations</p>
+            <div style="margin-top: 10px; font-size: 12px; color: var(--text-secondary);">
+                <span style="margin-right: 15px;">📋 <kbd style="background: var(--bg-tertiary); padding: 2px 6px; border-radius: 4px;">Ctrl+V</kbd> Paste CSV</span>
+                <span style="margin-right: 15px;">🔗 Connect BLE device for live recording</span>
+                <span style="margin-right: 15px;">▶️ <kbd style="background: var(--bg-tertiary); padding: 2px 6px; border-radius: 4px;">Space</kbd> Play/Pause</span>
+                <span style="margin-right: 15px;">🔍 <kbd style="background: var(--bg-tertiary); padding: 2px 6px; border-radius: 4px;">+/-/0</kbd> Zoom in/out/reset</span>
+                <span style="margin-right: 15px;">🎯 Selection Mode with smart data point snapping</span>
+                <span style="margin-right: 15px;">📤 Export CSV with marker annotations</span>
+                <span>🚪 <kbd style="background: var(--bg-tertiary); padding: 2px 6px; border-radius: 4px;">Esc</kbd> Close dialogs</span>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <div class="control-group">
+                <h3>Data Import</h3>
+                <div class="file-input-wrapper">
+                    <input type="file" id="csvFile" class="file-input" accept=".csv">
+                    <label for="csvFile" class="file-input-label">
+                        <span id="fileName">Click to upload CSV file</span>
+                    </label>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
+                    <div style="flex: 1; height: 1px; background: var(--border);"></div>
+                    <span style="color: var(--text-secondary); font-size: 12px;">OR</span>
+                    <div style="flex: 1; height: 1px; background: var(--border);"></div>
+                </div>
+                <button class="btn" onclick="showPasteModal()" style="width: 100%; margin-top: 10px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                    </svg>
+                    Paste CSV Data
+                </button>
+            </div>
+            
+            <div class="control-group">
+                <h3>BLE Recording</h3>
+                <div style="margin-bottom: 10px;">
+                    <div id="bleConnectionStatus" class="status-indicator disconnected">
+                        <span>●</span> Disconnected
+                    </div>
+                </div>
+                <button class="btn" id="connectBLE" onclick="connectBLE()" style="width: 100%; margin-bottom: 10px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M17.71,7.71L12,2H11V9H8.5L12,12.5L15.5,9H13V2H12L6.29,7.71L7.71,9.29L11,6V22H13V6L16.29,9.29L17.71,7.71Z"/>
+                    </svg>
+                    Connect BLE Device
+                </button>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn" id="startRecording" onclick="startRecording()" disabled style="flex: 1;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <circle cx="12" cy="12" r="10" fill="red"/>
+                        </svg>
+                        Record
+                    </button>
+                    <button class="btn btn-secondary" id="stopRecording" onclick="stopRecording()" disabled style="flex: 1;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <rect x="6" y="6" width="12" height="12"/>
+                        </svg>
+                        Stop
+                    </button>
+                </div>
+                <div style="margin-top: 10px; font-size: 12px; color: var(--text-secondary);">
+                    <div>Data Points: <span id="recordedCount">0</span></div>
+                    <div>Recording Time: <span id="recordingDuration">0s</span></div>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <h3>Marker Controls</h3>
+                <button class="btn" onclick="showMarkerModal()">
+                    <span>+</span> Add Marker
+                </button>
+                <button class="btn btn-secondary" id="selectionModeBtn" onclick="toggleSelectionMode()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M3 5h2V3c-1.1 0-2 .9-2 2zm0 8h2v-2H3v2zm4 8h2v-2H7v2zM3 9h2V7H3v2zm10-6h-2v2h2V3zm6 0v2h2c0-1.1-.9-2-2-2zM5 21v-2H3c0 1.1.9 2 2 2zm-2-4h2v-2H3v2zM9 3H7v2h2V3zm2 18h2v-2h-2v2zm8-8h2v-2h-2v2zm0 8c1.1 0 2-.9 2-2h-2v2zm0-12h2V7h-2v2zm0 8h2v-2h-2v2zm-4 4h2v-2h-2v2zm0-16h2V3h-2v2z"/>
+                    </svg>
+                    Selection Mode
+                </button>
+                <button class="btn btn-secondary" onclick="exportMarkers()">
+                    Export Markers
+                </button>
+                <button class="btn" onclick="exportCSVWithMarkers()" style="margin-top: 10px; width: 100%;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                    </svg>
+                    Export CSV with Markers
+                </button>
+            </div>
+            
+            <div class="control-group">
+                <h3>View Options</h3>
+                <label style="display: flex; align-items: center; gap: 10px;">
+                    <input type="checkbox" id="showDistance" checked> Show Distance
+                </label>
+                <label style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
+                    <input type="checkbox" id="showFlux" checked> Show Flux
+                </label>
+                <label style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
+                    <input type="checkbox" id="showTemperature" checked> Show Temperature
+                </label>
+                <button class="btn btn-secondary" onclick="resetAll()" style="margin-top: 10px; width: 100%;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+                    </svg>
+                    Reset All
+                </button>
+            </div>
+            
+            <div class="control-group">
+                <h3>Zoom Controls</h3>
+                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                    <button class="btn btn-secondary" onclick="zoomIn()" style="flex: 1;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                            <path d="M12 10h-2v2H9v-2H7V9h2V7h1v2h2v1z"/>
+                        </svg>
+                        Zoom In
+                    </button>
+                    <button class="btn btn-secondary" onclick="zoomOut()" style="flex: 1;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                            <path d="M7 9h5v1H7z"/>
+                        </svg>
+                        Zoom Out
+                    </button>
+                </div>
+                <button class="btn btn-secondary" onclick="resetZoom()" style="width: 100%;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                        <path d="M9.5 7.5v4l3.5 2.1-.6 1-4-2.4V7.5h1.1z"/>
+                    </svg>
+                    Reset Zoom
+                </button>
+                <div style="margin-top: 10px; font-size: 12px; color: var(--text-secondary); text-align: center;">
+                    <div>Zoom: <span id="zoomLevel">100%</span></div>
+                    <div style="margin-top: 5px;">🖱️ Use mouse wheel to zoom</div>
+                    <div>🖱️ <kbd style="background: var(--bg-tertiary); padding: 2px 6px; border-radius: 4px; font-size: 11px;">Ctrl</kbd>+drag to zoom area</div>
+                    <div>🖱️ Drag to pan when zoomed</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats" id="statsContainer" style="display: none;">
+            <div class="stat-card">
+                <div class="stat-value" id="totalPoints">0</div>
+                <div class="stat-label">Data Points</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="duration">0s</div>
+                <div class="stat-label">Duration</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="avgDistance">0</div>
+                <div class="stat-label">Avg Distance</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="avgFlux">0</div>
+                <div class="stat-label">Avg Flux</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="avgTemperature">0</div>
+                <div class="stat-label">Avg Temperature (°C)</div>
+            </div>
+        </div>
+
+        <!-- Zoom Indicator -->
+        <div class="zoom-indicator" id="zoomIndicator">
+            <span>Viewing:</span>
+            <span id="zoomTimeRange"></span>
+            <div class="zoom-bar">
+                <div class="zoom-bar-fill" id="zoomBarFill"></div>
+            </div>
+            <button class="btn btn-icon btn-secondary" onclick="resetZoom()" title="Reset zoom">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Chart -->
+        <div class="chart-container" id="chartContainer" style="display: none;">
+            <canvas id="dataChart"></canvas>
+            <div id="markerOverlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;"></div>
+            <div class="selection-overlay" id="selectionOverlay"></div>
+            <div class="selection-mode-indicator">Selection Mode Active</div>
+        </div>
+
+        <!-- Player Controls -->
+        <div class="player-controls" id="playerControls" style="display: none;">
+            <div class="play-btn" onclick="togglePlay()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="white" id="playIcon">
+                    <path d="M8 5v14l11-7z"/>
+                </svg>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="white" id="pauseIcon" style="display: none;">
+                    <rect x="6" y="4" width="4" height="16"/>
+                    <rect x="14" y="4" width="4" height="16"/>
+                </svg>
+            </div>
+            
+            <div class="timeline" id="timeline">
+                <div class="timeline-progress">
+                    <div class="timeline-current" id="timelineProgress"></div>
+                    <div class="timeline-handle" id="timelineHandle"></div>
+                </div>
+            </div>
+            
+            <div class="speed-control">
+                <label style="color: var(--text-secondary); font-size: 14px;">Speed:</label>
+                <select id="playbackSpeed">
+                    <option value="0.5">0.5x</option>
+                    <option value="1" selected>1x</option>
+                    <option value="2">2x</option>
+                    <option value="4">4x</option>
+                </select>
+            </div>
+            
+            <div style="color: var(--text-secondary); font-size: 14px;">
+                <span id="currentTime">00:00</span> / <span id="totalTime">00:00</span>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters" id="filtersContainer" style="display: none;">
+            <h3 style="margin-bottom: 15px;">Data Filters</h3>
+            <div class="filter-group">
+                <div class="filter-item">
+                    <label>Time Start (ms)</label>
+                    <input type="number" id="filterTimeStart" placeholder="0">
+                </div>
+                <div class="filter-item">
+                    <label>Time End (ms)</label>
+                    <input type="number" id="filterTimeEnd" placeholder="Max">
+                </div>
+                <div class="filter-item">
+                    <label>Distance Min</label>
+                    <input type="number" id="filterDistanceMin" placeholder="Min">
+                </div>
+                <div class="filter-item">
+                    <label>Distance Max</label>
+                    <input type="number" id="filterDistanceMax" placeholder="Max">
+                </div>
+            </div>
+            <button class="btn" onclick="applyFilters()">Apply Filters</button>
+            <button class="btn btn-secondary" onclick="resetFilters()">Reset</button>
+        </div>
+
+        <!-- Marker List -->
+        <div class="marker-list" id="markerList" style="display: none;">
+            <h3 style="margin-bottom: 15px;">Markers</h3>
+            <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">
+                💡 Tip: Use the same marker name to group multiple sections together
+            </p>
+            <div id="markerItems"></div>
+        </div>
+    </div>
+
+    <!-- Marker Modal -->
+    <div class="modal" id="markerModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Marker</h2>
+            </div>
+            <form onsubmit="addMarker(event)">
+                <div class="form-group">
+                    <label>Marker Name</label>
+                    <input type="text" id="markerName" required>
+                </div>
+                <div class="form-group">
+                    <label>Type</label>
+                    <select id="markerType">
+                        <option value="point">Point Marker</option>
+                        <option value="section">Section Marker</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Start Time (ms)</label>
+                    <input type="number" id="markerStartTime" required>
+                </div>
+                <div class="form-group" id="endTimeGroup" style="display: none;">
+                    <label>End Time (ms)</label>
+                    <input type="number" id="markerEndTime">
+                </div>
+                <div class="form-group">
+                    <label>Color</label>
+                    <div class="color-picker">
+                        <div class="color-option selected" style="background: #3b82f6;" data-color="#3b82f6"></div>
+                        <div class="color-option" style="background: #10b981;" data-color="#10b981"></div>
+                        <div class="color-option" style="background: #f59e0b;" data-color="#f59e0b"></div>
+                        <div class="color-option" style="background: #ef4444;" data-color="#ef4444"></div>
+                        <div class="color-option" style="background: #8b5cf6;" data-color="#8b5cf6"></div>
+                        <div class="color-option" style="background: #ec4899;" data-color="#ec4899"></div>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="submit" class="btn">Add Marker</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeMarkerModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Paste CSV Modal -->
+    <div class="modal" id="pasteModal">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h2>Paste CSV Data</h2>
+                <p style="color: var(--text-secondary); font-size: 14px; margin-top: 5px;">
+                    Paste your CSV data below. First row should contain headers: time, distance, flux, temperature, marker (optional)
+                </p>
+            </div>
+            <form onsubmit="processPastedCSV(event)">
+                <div class="form-group">
+                    <label>CSV Data</label>
+                    <textarea id="csvTextarea" required style="width: 100%; min-height: 300px; padding: 10px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 6px; color: var(--text-primary); font-family: 'Consolas', 'Monaco', monospace; font-size: 13px;" placeholder="time,distance,flux,temperature,marker
+1000,10.5,2.3,23.5,
+2000,15.2,3.1,24.8,
+3000,12.8,2.7,26.2,start
+4000,18.3,3.5,28.1,
+5000,14.1,2.9,29.3,end"></textarea>
+                    <button type="button" class="btn btn-secondary" onclick="fillSampleData()" style="margin-top: 10px;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/>
+                        </svg>
+                        Load Sample Data
+                    </button>
+                </div>
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; gap: 10px;">
+                        <input type="checkbox" id="hasHeaders" checked> First row contains headers
+                    </label>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="submit" class="btn">Process CSV</button>
+                    <button type="button" class="btn btn-secondary" onclick="closePasteModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Selection Marker Modal -->
+    <div class="modal" id="selectionModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create Section Marker</h2>
+                <p style="color: var(--text-secondary); font-size: 14px; margin-top: 5px;">
+                    Selected range: <span id="selectionRange"></span>
+                </p>
+            </div>
+            <form onsubmit="createSelectionMarker(event)">
+                <div class="form-group">
+                    <label>Use Existing Marker or Create New</label>
+                    <select id="markerChoice" onchange="handleMarkerChoice()">
+                        <option value="new">Create New Marker</option>
+                        <optgroup label="Existing Markers" id="existingMarkersGroup">
+                        </optgroup>
+                    </select>
+                </div>
+                <div id="newMarkerFields">
+                    <div class="form-group">
+                        <label>Marker Name</label>
+                        <input type="text" id="selectionMarkerName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Color</label>
+                        <div class="color-picker">
+                            <div class="color-option selected" style="background: #3b82f6;" data-color="#3b82f6"></div>
+                            <div class="color-option" style="background: #10b981;" data-color="#10b981"></div>
+                            <div class="color-option" style="background: #f59e0b;" data-color="#f59e0b"></div>
+                            <div class="color-option" style="background: #ef4444;" data-color="#ef4444"></div>
+                            <div class="color-option" style="background: #8b5cf6;" data-color="#8b5cf6"></div>
+                            <div class="color-option" style="background: #ec4899;" data-color="#ec4899"></div>
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="submit" class="btn">Create Marker</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeSelectionModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p style="margin-top: 20px; color: var(--text-secondary);">Processing data...</p>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <div class="toast-icon">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="white">
+                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+            </svg>
+        </div>
+        <div class="toast-message" id="toastMessage"></div>
+    </div>
+
+    <script>
+        // Global variables
+        let csvData = [];
+        let filteredData = [];
+        let chart = null;
+        let markers = [];
+        let isPlaying = false;
+        let currentIndex = 0;
+        let playInterval = null;
+        let selectedColor = '#3b82f6';
+        let startTime = 0;
+        let endTime = 0;
+        let selectionMode = false;
+        let isSelecting = false;
+        let selectionStart = null;
+        let selectionEnd = null;
+        let selectionStartIndex = null;
+        let selectionEndIndex = null;
+
+        // BLE Recording variables
+        let bleDevice = null;
+        let bleServer = null;
+        let nusService = null;
+        let txCharacteristic = null;
+        let rxCharacteristic = null;
+        let isRecording = false;
+        let recordedData = [];
+        let receivedBuffer = '';
+        let recordingStartTime = null;
+        let recordingInterval = null;
+        let dataPointCount = 0;
+
+        // Initialize
+        document.getElementById('csvFile').addEventListener('change', handleFileUpload);
+        document.getElementById('markerType').addEventListener('change', function(e) {
+            document.getElementById('endTimeGroup').style.display = 
+                e.target.value === 'section' ? 'block' : 'none';
+        });
+
+        // Color picker
+        document.querySelectorAll('.color-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.color-option').forEach(o => o.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedColor = this.dataset.color;
+            });
+        });
+
+        // Color picker for selection modal
+        document.querySelectorAll('#selectionModal .color-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('#selectionModal .color-option').forEach(o => o.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedColor = this.dataset.color;
+            });
+        });
+
+        // Timeline dragging
+        let isDragging = false;
+        const timeline = document.getElementById('timeline');
+        const timelineHandle = document.getElementById('timelineHandle');
+
+        timeline.addEventListener('mousedown', function(e) {
+            isDragging = true;
+            updateTimelinePosition(e);
+        });
+
+        document.addEventListener('mousemove', function(e) {
+            if (isDragging) {
+                updateTimelinePosition(e);
+            }
+        });
+
+        document.addEventListener('mouseup', function() {
+            isDragging = false;
+        });
+
+        function updateTimelinePosition(e) {
+            const rect = timeline.getBoundingClientRect();
+            const x = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
+            const percentage = x / rect.width;
+            currentIndex = Math.floor(percentage * filteredData.length);
+            updateVisualization();
+        }
+
+        // BLE Connection and Recording Functions
+        async function connectBLE() {
+            try {
+                showToast('Connecting to BLE device...');
+                
+                bleDevice = await navigator.bluetooth.requestDevice({
+                    filters: [
+                        { services: ['6e400001-b5a3-f393-e0a9-e50e24dcca9e'] },
+                        { services: [0xbe05] }, 
+                        { services: [0xae05] },
+                        { services: [0xae06] },
+                        { services: [0xae07] },
+                        { services: [0xae08] },
+                        { services: [0xae09] },
+                        { services: [0xae10] }
+                    ],
+                    optionalServices: ['generic_access'],
+                });
+                
+                bleServer = await bleDevice.gatt.connect();
+                nusService = await bleServer.getPrimaryService('6e400001-b5a3-f393-e0a9-e50e24dcca9e');
+                txCharacteristic = await nusService.getCharacteristic('6e400002-b5a3-f393-e0a9-e50e24dcca9e');
+                rxCharacteristic = await nusService.getCharacteristic('6e400003-b5a3-f393-e0a9-e50e24dcca9e');
+                
+                await rxCharacteristic.startNotifications();
+                rxCharacteristic.addEventListener('characteristicvaluechanged', handleBLEDataReceived);
+                
+                // Listen for disconnection
+                bleDevice.addEventListener('gattserverdisconnected', handleBLEDisconnection);
+                
+                updateBLEConnectionStatus(true);
+                showToast('Connected to BLE device successfully');
+                
+                // Enable recording buttons
+                document.getElementById('startRecording').disabled = false;
+                
+            } catch (error) {
+                console.error('BLE connection error:', error);
+                showToast('Failed to connect to BLE device: ' + error.message);
+                updateBLEConnectionStatus(false);
+            }
+        }
+
+        function disconnectBLE() {
+            if (bleDevice && bleDevice.gatt.connected) {
+                if (isRecording) {
+                    stopRecording();
+                }
+                bleDevice.gatt.disconnect();
+                updateBLEConnectionStatus(false);
+                showToast('Disconnected from BLE device');
+                
+                // Disable recording buttons
+                document.getElementById('startRecording').disabled = true;
+                document.getElementById('stopRecording').disabled = true;
+            }
+        }
+
+        function handleBLEDisconnection() {
+            console.log('BLE device disconnected');
+            
+            // Stop recording if active
+            if (isRecording) {
+                stopRecording();
+                showToast('Recording stopped due to BLE disconnection');
+            }
+            
+            // Update UI
+            updateBLEConnectionStatus(false);
+            document.getElementById('startRecording').disabled = true;
+            document.getElementById('stopRecording').disabled = true;
+            
+            showToast('BLE device disconnected unexpectedly');
+        }
+
+        function updateBLEConnectionStatus(connected) {
+            const statusElement = document.getElementById('bleConnectionStatus');
+            const connectBtn = document.getElementById('connectBLE');
+            
+            if (connected) {
+                statusElement.innerHTML = '<span>●</span> Connected';
+                statusElement.className = 'status-indicator connected';
+                connectBtn.textContent = 'Disconnect';
+                connectBtn.onclick = disconnectBLE;
+            } else {
+                statusElement.innerHTML = '<span>●</span> Disconnected';
+                statusElement.className = 'status-indicator disconnected';
+                connectBtn.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M17.71,7.71L12,2H11V9H8.5L12,12.5L15.5,9H13V2H12L6.29,7.71L7.71,9.29L11,6V22H13V6L16.29,9.29L17.71,7.71Z"/>
+                    </svg>
+                    Connect BLE Device
+                `;
+                connectBtn.onclick = connectBLE;
+            }
+        }
+
+        function handleBLEDataReceived(event) {
+            const value = event.target.value;
+            const chunk = new TextDecoder().decode(value);
+            receivedBuffer += chunk;
+            
+            // Process complete lines
+            const lines = receivedBuffer.split('\n');
+            receivedBuffer = lines.pop(); // Keep incomplete line in buffer
+            
+            for (let line of lines) {
+                if (line.trim() && isRecording) {
+                    processReceivedLine(line.trim());
+                }
+            }
+        }
+
+        function processReceivedLine(line) {
+            try {
+                // Validate and parse the line as CSV
+                const validatedData = validateAndParseCSVLine(line);
+                if (validatedData) {
+                    recordedData.push(validatedData);
+                    dataPointCount++;
+                    updateRecordingStats();
+                }
+            } catch (error) {
+                console.warn('Invalid data line received:', line, error);
+            }
+        }
+
+        function validateAndParseCSVLine(line) {
+            // Remove any non-printable characters
+            line = line.replace(/[^\x20-\x7E]/g, '');
+            
+            // Try to parse as CSV (comma, semicolon, or tab separated)
+            let values = [];
+            
+            // Try different separators
+            if (line.includes(',')) {
+                values = line.split(',');
+            } else if (line.includes(';')) {
+                values = line.split(';');
+            } else if (line.includes('\t')) {
+                values = line.split('\t');
+            } else {
+                values = line.split(/\s+/); // Split by whitespace
+            }
+            
+            // Ensure we have at least 4 values (time, distance, flux, temperature)
+            if (values.length < 4) {
+                return null;
+            }
+            
+            // Parse and validate numeric values
+            const time = parseFloat(values[0]);
+            const distance = parseFloat(values[1]);
+            const flux = parseFloat(values[2]);
+            const temperature = parseFloat(values[3]);
+            const marker = values[4] ? values[4].trim() : '';
+            
+            // Validate numbers
+            if (isNaN(time) || isNaN(distance) || isNaN(flux) || isNaN(temperature)) {
+                return null;
+            }
+            
+            // Additional validation rules
+            if (time < 0 || distance < 0 || flux < 0) {
+                return null;
+            }
+            
+            // Temperature validation (reasonable range: -50 to 150°C)
+            if (temperature < -50 || temperature > 150) {
+                return null;
+            }
+            
+            // Check for reasonable ranges (adjust as needed)
+            if (distance > 10000 || flux > 10000) { // Reasonable max values
+                return null;
+            }
+            
+            return {
+                time: time,
+                distance: distance,
+                flux: flux,
+                temperature: temperature,
+                marker: marker,
+                timestamp: Date.now() // Add reception timestamp
+            };
+        }
+
+        function startRecording() {
+            if (!bleDevice || !bleDevice.gatt.connected) {
+                showToast('Please connect to BLE device first');
+                return;
+            }
+            
+            // Reset recording data
+            recordedData = [];
+            receivedBuffer = '';
+            dataPointCount = 0;
+            recordingStartTime = Date.now();
+            isRecording = true;
+            
+            // Update UI
+            const statusElement = document.getElementById('bleConnectionStatus');
+            statusElement.innerHTML = '<span>●</span> Recording...';
+            statusElement.className = 'status-indicator recording';
+            
+            document.getElementById('startRecording').disabled = true;
+            document.getElementById('startRecording').classList.add('recording-active');
+            document.getElementById('stopRecording').disabled = false;
+            
+            // Start recording duration counter
+            recordingInterval = setInterval(updateRecordingStats, 1000);
+            
+            showToast('Recording started - receiving data from BLE device');
+        }
+
+        function stopRecording() {
+            if (!isRecording) return;
+            
+            isRecording = false;
+            
+            // Clear interval
+            if (recordingInterval) {
+                clearInterval(recordingInterval);
+                recordingInterval = null;
+            }
+            
+            // Update UI
+            updateBLEConnectionStatus(true); // Reset to connected state
+            document.getElementById('startRecording').disabled = false;
+            document.getElementById('startRecording').classList.remove('recording-active');
+            document.getElementById('stopRecording').disabled = true;
+            
+            // Process recorded data
+            if (recordedData.length > 0) {
+                processRecordedData();
+                showToast(`Recording stopped - ${recordedData.length} data points captured`);
+            } else {
+                showToast('Recording stopped - no valid data received');
+            }
+        }
+
+        function updateRecordingStats() {
+            if (!isRecording) return;
+            
+            document.getElementById('recordedCount').textContent = dataPointCount.toLocaleString();
+            
+            if (recordingStartTime) {
+                const duration = Math.floor((Date.now() - recordingStartTime) / 1000);
+                document.getElementById('recordingDuration').textContent = duration + 's';
+            }
+        }
+
+        function processRecordedData() {
+            if (recordedData.length === 0) {
+                showToast('No valid data to process');
+                return;
+            }
+            
+            // Convert recorded data to CSV format
+            const csvFormatData = recordedData.map(point => ({
+                time: point.time,
+                distance: point.distance,
+                flux: point.flux,
+                temperature: point.temperature,
+                marker: point.marker || ''
+            }));
+            
+            // Process as CSV data
+            processCSVData(csvFormatData);
+            
+            // Update filename to show it's from BLE recording
+            const timestamp = new Date().toISOString().slice(0, 19).replace(/[:.]/g, '-');
+            document.getElementById('fileName').textContent = `BLE_Recording_${timestamp}.csv`;
+            
+            showToast(`Successfully processed ${csvFormatData.length} data points from BLE recording`);
+        }
+
+        // File upload
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('loading').classList.add('active');
+
+            Papa.parse(file, {
+                complete: function(results) {
+                    processCSVData(results.data);
+                    document.getElementById('loading').classList.remove('active');
+                },
+                header: true,
+                dynamicTyping: true,
+                skipEmptyLines: true
+            });
+        }
+
+        // Process CSV data
+        function processCSVData(data) {
+            csvData = data.map(row => ({
+                time: parseFloat(row.time || row.Time || row.TIME || 0),
+                distance: parseFloat(row.distance || row.Distance || row.DISTANCE || 0),
+                flux: parseFloat(row.flux || row.Flux || row.FLUX || 0),
+                temperature: parseFloat(row.temperature || row.Temperature || row.TEMPERATURE || 0),
+                marker: row.marker || row.Marker || row.MARKER || ''
+            })).filter(row => !isNaN(row.time));
+
+            if (csvData.length === 0) {
+                alert('No valid data found in CSV file');
+                return;
+            }
+
+            // Sort by time
+            csvData.sort((a, b) => a.time - b.time);
+            filteredData = [...csvData];
+
+            // Update time range
+            startTime = csvData[0].time;
+            endTime = csvData[csvData.length - 1].time;
+
+            // Auto-import markers from CSV
+            const autoMarkers = [];
+            const markerColors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
+            let colorIndex = 0;
+            
+            csvData.forEach((row, index) => {
+                if (row.marker) {
+                    // Check if this is the start of a section
+                    const isSection = row.marker.toLowerCase().includes('start') || 
+                                    row.marker.toLowerCase().includes('begin');
+                    
+                    if (isSection) {
+                        // Look for corresponding end marker
+                        let endIndex = csvData.findIndex((r, i) => 
+                            i > index && r.marker && 
+                            (r.marker.toLowerCase().includes('end') || 
+                             r.marker.toLowerCase().includes('stop'))
+                        );
+                        
+                        if (endIndex !== -1) {
+                            autoMarkers.push({
+                                id: Date.now() + index,
+                                name: row.marker,
+                                type: 'section',
+                                startTime: row.time,
+                                endTime: csvData[endIndex].time,
+                                color: markerColors[colorIndex % markerColors.length]
+                            });
+                            colorIndex++;
+                        } else {
+                            // No end found, create point marker
+                            autoMarkers.push({
+                                id: Date.now() + index,
+                                name: row.marker,
+                                type: 'point',
+                                startTime: row.time,
+                                endTime: row.time,
+                                color: markerColors[colorIndex % markerColors.length]
+                            });
+                            colorIndex++;
+                        }
+                    } else if (!row.marker.toLowerCase().includes('end') && 
+                              !row.marker.toLowerCase().includes('stop')) {
+                        // Regular point marker
+                        autoMarkers.push({
+                            id: Date.now() + index,
+                            name: row.marker,
+                            type: 'point',
+                            startTime: row.time,
+                            endTime: row.time,
+                            color: markerColors[colorIndex % markerColors.length]
+                        });
+                        colorIndex++;
+                    }
+                }
+            });
+            
+            if (autoMarkers.length > 0) {
+                markers = autoMarkers;
+                updateMarkerList();
+                showToast(`Imported ${autoMarkers.length} marker${autoMarkers.length > 1 ? 's' : ''} from CSV`);
+            }
+
+            // Update UI
+            updateStats();
+            createChart();
+            showElements();
+            renderMarkers();
+        }
+
+        // Toast notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            toastMessage.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Update statistics
+        function updateStats() {
+            const totalPoints = filteredData.length;
+            const duration = (endTime - startTime) / 1000; // Convert to seconds
+            const avgDistance = filteredData.reduce((sum, d) => sum + d.distance, 0) / totalPoints;
+            const avgFlux = filteredData.reduce((sum, d) => sum + d.flux, 0) / totalPoints;
+            const avgTemperature = filteredData.reduce((sum, d) => sum + (d.temperature || 0), 0) / totalPoints;
+
+            document.getElementById('totalPoints').textContent = totalPoints.toLocaleString();
+            document.getElementById('duration').textContent = duration.toFixed(1) + 's';
+            document.getElementById('avgDistance').textContent = avgDistance.toFixed(2);
+            document.getElementById('avgFlux').textContent = avgFlux.toFixed(2);
+            document.getElementById('avgTemperature').textContent = avgTemperature.toFixed(1);
+            
+            document.getElementById('currentTime').textContent = formatDuration(0);
+            document.getElementById('totalTime').textContent = formatDuration(duration * 1000);
+        }
+
+        // Create chart
+        function createChart() {
+            const ctx = document.getElementById('dataChart').getContext('2d');
+            
+            if (chart) {
+                chart.destroy();
+            }
+
+            const datasets = [];
+            
+            if (document.getElementById('showDistance').checked) {
+                datasets.push({
+                    label: 'Distance',
+                    data: filteredData.map(d => ({ x: d.time, y: d.distance })),
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.1,
+                    yAxisID: 'y',
+                    pointRadius: 0,
+                    pointHoverRadius: 5
+                });
+            }
+
+            if (document.getElementById('showFlux').checked) {
+                datasets.push({
+                    label: 'Flux',
+                    data: filteredData.map(d => ({ x: d.time, y: d.flux })),
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.1,
+                    yAxisID: 'y1',
+                    pointRadius: 0,
+                    pointHoverRadius: 5
+                });
+            }
+
+            if (document.getElementById('showTemperature').checked) {
+                datasets.push({
+                    label: 'Temperature (°C)',
+                    data: filteredData.map(d => ({ x: d.time, y: d.temperature || 0 })),
+                    borderColor: '#f59e0b',
+                    backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.1,
+                    yAxisID: 'y2',
+                    pointRadius: 0,
+                    pointHoverRadius: 5
+                });
+            }
+
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: { datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            labels: {
+                                color: '#a0a0a0',
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            borderColor: '#333',
+                            borderWidth: 1,
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    return 'Time: ' + formatTime(tooltipItems[0].parsed.x - startTime);
+                                },
+                                footer: function(tooltipItems) {
+                                    return 'Raw time: ' + Math.round(tooltipItems[0].parsed.x).toLocaleString() + ' ms';
+                                }
+                            }
+                        },
+                        zoom: {
+                            limits: {
+                                x: {min: 'original', max: 'original'},
+                            },
+                            pan: {
+                                enabled: true,
+                                mode: 'x',
+                                modifierKey: null,
+                                onPanComplete: function({chart}) {
+                                    updateZoomLevel();
+                                    renderMarkers();
+                                }
+                            },
+                            zoom: {
+                                wheel: {
+                                    enabled: true,
+                                    speed: 0.1,
+                                    modifierKey: null,
+                                },
+                                drag: {
+                                    enabled: true,
+                                    modifierKey: 'ctrl',
+                                },
+                                pinch: {
+                                    enabled: true
+                                },
+                                mode: 'x',
+                                onZoomComplete: function({chart}) {
+                                    updateZoomLevel();
+                                    renderMarkers();
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Time (ms)',
+                                color: '#a0a0a0'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#a0a0a0',
+                                callback: function(value) {
+                                    return Math.round(value - startTime).toLocaleString() + ' ms';
+                                }
+                            }
+                        },
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'Distance',
+                                color: '#3b82f6'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#3b82f6'
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: document.getElementById('showFlux').checked,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'Flux',
+                                color: '#10b981'
+                            },
+                            grid: {
+                                drawOnChartArea: false,
+                            },
+                            ticks: {
+                                color: '#10b981'
+                            }
+                        },
+                        y2: {
+                            type: 'linear',
+                            display: document.getElementById('showTemperature').checked,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'Temperature (°C)',
+                                color: '#f59e0b'
+                            },
+                            grid: {
+                                drawOnChartArea: false,
+                            },
+                            ticks: {
+                                color: '#f59e0b'
+                            },
+                            // Offset the second right axis
+                            offset: true
+                        }
+                    }
+                }
+            });
+
+            // Setup chart events after creation
+            setTimeout(setupChartEvents, 100);
+            
+            // Add current position line
+            addCurrentPositionLine();
+            
+            // Update initial zoom level
+            updateZoomLevel();
+        }
+
+        // Add current position line
+        function addCurrentPositionLine() {
+            if (!chart) return;
+            
+            // Remove existing annotation if any
+            if (chart.options.plugins.annotation) {
+                chart.options.plugins.annotation.annotations = {};
+            } else {
+                chart.options.plugins.annotation = {
+                    annotations: {}
+                };
+            }
+            
+            // Update chart
+            chart.update();
+        }
+
+        // Show UI elements
+        function showElements() {
+            document.getElementById('statsContainer').style.display = 'grid';
+            document.getElementById('chartContainer').style.display = 'block';
+            document.getElementById('playerControls').style.display = 'flex';
+            document.getElementById('filtersContainer').style.display = 'block';
+            document.getElementById('markerList').style.display = 'block';
+        }
+
+        // Playback controls
+        function togglePlay() {
+            isPlaying = !isPlaying;
+            document.getElementById('playIcon').style.display = isPlaying ? 'none' : 'block';
+            document.getElementById('pauseIcon').style.display = isPlaying ? 'block' : 'none';
+
+            if (isPlaying) {
+                startPlayback();
+            } else {
+                stopPlayback();
+            }
+        }
+
+        function startPlayback() {
+            const speed = parseFloat(document.getElementById('playbackSpeed').value);
+            const interval = 50 / speed; // Update every 50ms adjusted by speed
+
+            playInterval = setInterval(() => {
+                currentIndex++;
+                if (currentIndex >= filteredData.length) {
+                    currentIndex = 0;
+                }
+                updateVisualization();
+            }, interval);
+        }
+
+        function stopPlayback() {
+            if (playInterval) {
+                clearInterval(playInterval);
+                playInterval = null;
+            }
+        }
+
+        function updateVisualization() {
+            if (filteredData.length === 0) return;
+
+            const currentData = filteredData[currentIndex];
+            const progress = currentIndex / (filteredData.length - 1);
+            
+            // Update timeline
+            document.getElementById('timelineProgress').style.width = (progress * 100) + '%';
+            document.getElementById('timelineHandle').style.left = (progress * 100) + '%';
+            
+            // Update time display
+            const currentTime = currentData.time - startTime;
+            document.getElementById('currentTime').textContent = formatDuration(currentTime);
+            
+            // Update chart with vertical line if data point is visible
+            if (chart) {
+                const xScale = chart.scales.x;
+                const isVisible = currentData.time >= xScale.min && currentData.time <= xScale.max;
+                
+                if (isVisible) {
+                    // Find the point in the visible data
+                    const meta = chart.getDatasetMeta(0);
+                    const dataPoint = meta.data.find(point => {
+                        const dataIndex = meta.data.indexOf(point);
+                        return filteredData[dataIndex] && Math.abs(filteredData[dataIndex].time - currentData.time) < 1;
+                    });
+                    
+                    if (dataPoint) {
+                        chart.canvas.style.cursor = 'crosshair';
+                        chart.update('none');
+                    }
+                }
+            }
+        }
+
+        // Marker functions
+        function showMarkerModal() {
+            document.getElementById('markerModal').classList.add('active');
+            document.getElementById('markerStartTime').value = filteredData[currentIndex]?.time || startTime;
+        }
+
+        function closeMarkerModal() {
+            document.getElementById('markerModal').classList.remove('active');
+            document.getElementById('markerModal').querySelector('form').reset();
+        }
+
+        function addMarker(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('markerName').value;
+            const type = document.getElementById('markerType').value;
+            const startTime = parseFloat(document.getElementById('markerStartTime').value);
+            const endTime = type === 'section' ? parseFloat(document.getElementById('markerEndTime').value) : startTime;
+            
+            const marker = {
+                id: Date.now(),
+                name,
+                type,
+                startTime,
+                endTime,
+                color: selectedColor
+            };
+            
+            markers.push(marker);
+            updateMarkerList();
+            renderMarkers();
+            closeMarkerModal();
+        }
+
+        function updateMarkerList() {
+            const container = document.getElementById('markerItems');
+            container.innerHTML = '';
+            
+            // Group markers by name
+            const markerGroups = {};
+            markers.forEach(marker => {
+                if (!markerGroups[marker.name]) {
+                    markerGroups[marker.name] = [];
+                }
+                markerGroups[marker.name].push(marker);
+            });
+            
+            // Show summary if multiple groups exist
+            if (Object.keys(markerGroups).length > 1) {
+                const summary = document.createElement('div');
+                summary.style.padding = '10px';
+                summary.style.background = 'var(--bg-tertiary)';
+                summary.style.borderRadius = '6px';
+                summary.style.marginBottom = '15px';
+                summary.style.fontSize = '13px';
+                summary.innerHTML = `
+                    <strong>Summary:</strong> ${Object.keys(markerGroups).length} unique markers, 
+                    ${markers.length} total sections
+                `;
+                container.appendChild(summary);
+            }
+            
+            // Display grouped markers
+            Object.entries(markerGroups).forEach(([name, groupMarkers]) => {
+                const groupDiv = document.createElement('div');
+                groupDiv.style.marginBottom = '15px';
+                
+                // Group header
+                const header = document.createElement('div');
+                header.style.display = 'flex';
+                header.style.alignItems = 'center';
+                header.style.marginBottom = '5px';
+                
+                const colorDiv = document.createElement('div');
+                colorDiv.className = 'marker-color';
+                colorDiv.style.background = groupMarkers[0].color;
+                
+                const nameDiv = document.createElement('div');
+                nameDiv.style.flex = '1';
+                nameDiv.style.fontWeight = '600';
+                nameDiv.innerHTML = `${name} <span style="color: var(--text-secondary); font-weight: normal;">(${groupMarkers.length} section${groupMarkers.length > 1 ? 's' : ''})</span>`;
+                
+                const deleteAllBtn = document.createElement('button');
+                deleteAllBtn.className = 'btn btn-icon btn-secondary';
+                deleteAllBtn.style.marginLeft = 'auto';
+                deleteAllBtn.title = 'Delete all sections in this group';
+                deleteAllBtn.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM8 9h8v10H8V9zm7.5-5l-1-1h-5l-1 1H5v2h14V4z"/>
+                    </svg>
+                `;
+                deleteAllBtn.onclick = () => deleteMarkerGroup(name);
+                
+                header.appendChild(colorDiv);
+                header.appendChild(nameDiv);
+                header.appendChild(deleteAllBtn);
+                groupDiv.appendChild(header);
+                
+                // Individual sections
+                groupMarkers.forEach(marker => {
+                    const item = document.createElement('div');
+                    item.className = 'marker-item';
+                    item.style.marginLeft = '30px';
+                    item.style.marginBottom = '5px';
+                    item.innerHTML = `
+                        <div class="marker-info">
+                            <div class="marker-time">
+                                ${formatTime(marker.startTime - startTime)}
+                                ${marker.type === 'section' ? ' - ' + formatTime(marker.endTime - startTime) : ''}
+                            </div>
+                        </div>
+                        <button class="btn btn-icon btn-secondary" onclick="deleteMarker(${marker.id})">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                            </svg>
+                        </button>
+                    `;
+                    groupDiv.appendChild(item);
+                });
+                
+                container.appendChild(groupDiv);
+            });
+        }
+
+        function renderMarkers() {
+            const overlay = document.getElementById('markerOverlay');
+            overlay.innerHTML = '';
+            
+            if (!chart) return;
+            
+            const chartArea = chart.chartArea;
+            const xScale = chart.scales.x;
+            const visibleMin = xScale.min;
+            const visibleMax = xScale.max;
+            const visibleRange = visibleMax - visibleMin;
+            
+            markers.forEach(marker => {
+                // Skip markers outside visible range
+                if (marker.endTime < visibleMin || marker.startTime > visibleMax) {
+                    return;
+                }
+                
+                if (marker.type === 'point') {
+                    const position = ((marker.startTime - visibleMin) / visibleRange) * 100;
+                    const markerEl = document.createElement('div');
+                    markerEl.className = 'marker';
+                    markerEl.style.left = position + '%';
+                    markerEl.style.background = marker.color;
+                    markerEl.innerHTML = `<div class="marker-label">${marker.name}</div>`;
+                    overlay.appendChild(markerEl);
+                } else if (marker.type === 'section') {
+                    const startPos = Math.max(0, ((marker.startTime - visibleMin) / visibleRange) * 100);
+                    const endPos = Math.min(100, ((marker.endTime - visibleMin) / visibleRange) * 100);
+                    const width = endPos - startPos;
+                    
+                    if (width > 0) {
+                        const sectionEl = document.createElement('div');
+                        sectionEl.className = 'marker-section';
+                        sectionEl.style.left = startPos + '%';
+                        sectionEl.style.width = width + '%';
+                        sectionEl.style.background = marker.color;
+                        sectionEl.title = marker.name;
+                        sectionEl.dataset.markerName = marker.name;
+                        
+                        // Add hover handlers for highlighting related sections
+                        sectionEl.addEventListener('mouseenter', () => {
+                            document.querySelectorAll(`[data-marker-name="${marker.name}"]`).forEach(el => {
+                                el.classList.add('highlight');
+                            });
+                        });
+                        
+                        sectionEl.addEventListener('mouseleave', () => {
+                            document.querySelectorAll(`[data-marker-name="${marker.name}"]`).forEach(el => {
+                                el.classList.remove('highlight');
+                            });
+                        });
+                        
+                        overlay.appendChild(sectionEl);
+                    }
+                }
+            });
+        }
+
+        function deleteMarker(id) {
+            markers = markers.filter(m => m.id !== id);
+            updateMarkerList();
+            renderMarkers();
+        }
+
+        function deleteMarkerGroup(name) {
+            if (confirm(`Delete all ${markers.filter(m => m.name === name).length} sections named "${name}"?`)) {
+                markers = markers.filter(m => m.name !== name);
+                updateMarkerList();
+                renderMarkers();
+                showToast(`Deleted all "${name}" markers`);
+            }
+        }
+
+        function exportMarkers() {
+            const dataStr = JSON.stringify(markers, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = 'markers.json';
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+        }
+
+        function exportCSVWithMarkers() {
+            if (csvData.length === 0) {
+                showToast('No data to export');
+                return;
+            }
+
+            // Create CSV header
+            let csvContent = 'time,distance,flux,temperature,marker\n';
+            
+            // Process each data point
+            csvData.forEach(dataPoint => {
+                const markerName = getMarkerForTime(dataPoint.time);
+                const row = `${dataPoint.time},${dataPoint.distance},${dataPoint.flux},${dataPoint.temperature || 0},${markerName || 'null'}\n`;
+                csvContent += row;
+            });
+            
+            // Create download
+            const dataUri = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvContent);
+            const exportFileDefaultName = 'data_with_markers.csv';
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+            
+            showToast(`Exported ${csvData.length} data points with marker annotations`);
+        }
+
+        function getMarkerForTime(time) {
+            const applicableMarkers = [];
+            
+            // Calculate a reasonable tolerance based on data density
+            const totalTimeRange = endTime - startTime;
+            const avgInterval = totalTimeRange / csvData.length;
+            const tolerance = Math.max(1, avgInterval / 2); // Use half the average interval or 1ms minimum
+            
+            // Check if this time falls within any marker's range
+            for (let marker of markers) {
+                if (marker.type === 'point') {
+                    // For point markers, use dynamic tolerance
+                    if (Math.abs(time - marker.startTime) <= tolerance) {
+                        applicableMarkers.push(marker.name);
+                    }
+                } else if (marker.type === 'section') {
+                    // For section markers, check if time is within the range
+                    if (time >= marker.startTime && time <= marker.endTime) {
+                        applicableMarkers.push(marker.name);
+                    }
+                }
+            }
+            
+            if (applicableMarkers.length === 0) {
+                return null;
+            } else if (applicableMarkers.length === 1) {
+                return applicableMarkers[0];
+            } else {
+                // Multiple markers apply - join them with semicolon
+                return applicableMarkers.join(';');
+            }
+        }
+
+        // Filter functions
+        function applyFilters() {
+            const timeStart = parseFloat(document.getElementById('filterTimeStart').value) || startTime;
+            const timeEnd = parseFloat(document.getElementById('filterTimeEnd').value) || endTime;
+            const distanceMin = parseFloat(document.getElementById('filterDistanceMin').value) || -Infinity;
+            const distanceMax = parseFloat(document.getElementById('filterDistanceMax').value) || Infinity;
+            
+            filteredData = csvData.filter(d => 
+                d.time >= timeStart && 
+                d.time <= timeEnd &&
+                d.distance >= distanceMin &&
+                d.distance <= distanceMax
+            );
+            
+            currentIndex = 0;
+            updateStats();
+            createChart();
+            renderMarkers();
+        }
+
+        function resetFilters() {
+            document.getElementById('filterTimeStart').value = '';
+            document.getElementById('filterTimeEnd').value = '';
+            document.getElementById('filterDistanceMin').value = '';
+            document.getElementById('filterDistanceMax').value = '';
+            
+            filteredData = [...csvData];
+            currentIndex = 0;
+            updateStats();
+            createChart();
+            renderMarkers();
+        }
+
+        // Utility functions
+        function formatTime(ms) {
+            // Show raw milliseconds for better precision
+            return Math.round(ms).toLocaleString() + ' ms';
+        }
+
+        function formatDuration(ms) {
+            // Format duration as MM:SS for the player controls
+            const totalSeconds = Math.floor(ms / 1000);
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // Update chart when checkboxes change
+        document.getElementById('showDistance').addEventListener('change', createChart);
+        document.getElementById('showFlux').addEventListener('change', createChart);
+        document.getElementById('showTemperature').addEventListener('change', createChart);
+
+        // Zoom functions
+        function zoomIn() {
+            if (!chart) return;
+            chart.zoom(1.2);
+            updateZoomLevel();
+        }
+
+        function zoomOut() {
+            if (!chart) return;
+            chart.zoom(0.8);
+            updateZoomLevel();
+        }
+
+        function resetZoom() {
+            if (!chart) return;
+            chart.resetZoom();
+            updateZoomLevel();
+        }
+
+        function updateZoomLevel() {
+            if (!chart) return;
+            
+            const xScale = chart.scales.x;
+            const currentMin = xScale.min;
+            const currentMax = xScale.max;
+            const currentRange = currentMax - currentMin;
+            const totalRange = endTime - startTime;
+            const zoomLevel = Math.round((totalRange / currentRange) * 100);
+            
+            document.getElementById('zoomLevel').textContent = zoomLevel + '%';
+            
+            // Update zoom indicator
+            const zoomIndicator = document.getElementById('zoomIndicator');
+            const zoomBarFill = document.getElementById('zoomBarFill');
+            const zoomTimeRange = document.getElementById('zoomTimeRange');
+            
+            if (zoomLevel > 100) {
+                zoomIndicator.classList.add('active');
+                
+                // Calculate position and width of zoom bar
+                const startPercent = ((currentMin - startTime) / totalRange) * 100;
+                const widthPercent = (currentRange / totalRange) * 100;
+                
+                zoomBarFill.style.left = startPercent + '%';
+                zoomBarFill.style.width = widthPercent + '%';
+                
+                // Update time range text
+                const rangeStart = formatTime(currentMin - startTime);
+                const rangeEnd = formatTime(currentMax - startTime);
+                zoomTimeRange.textContent = `${rangeStart} - ${rangeEnd}`;
+            } else {
+                zoomIndicator.classList.remove('active');
+            }
+            
+            // Update marker positions when zoomed
+            renderMarkers();
+        }
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            if (chart) {
+                chart.resize();
+                renderMarkers();
+            }
+        });
+
+        // Handle BLE device disconnection
+        window.addEventListener('beforeunload', () => {
+            if (bleDevice && bleDevice.gatt.connected) {
+                if (isRecording) {
+                    stopRecording();
+                }
+                disconnectBLE();
+            }
+        });
+
+        // Listen for BLE device disconnection events
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check if browser supports Web Bluetooth
+            if (!navigator.bluetooth) {
+                document.getElementById('connectBLE').disabled = true;
+                document.getElementById('connectBLE').textContent = 'Web Bluetooth not supported';
+                document.getElementById('connectBLE').title = 'This browser does not support Web Bluetooth API';
+            }
+        });
+
+        // Close modal on outside click
+        document.getElementById('markerModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeMarkerModal();
+            }
+        });
+
+        // Paste CSV Modal functions
+        function showPasteModal() {
+            document.getElementById('pasteModal').classList.add('active');
+        }
+
+        function closePasteModal() {
+            document.getElementById('pasteModal').classList.remove('active');
+            document.getElementById('csvTextarea').value = '';
+        }
+
+        function fillSampleData() {
+            const sampleData = `time,distance,flux,temperature,marker
+0,10.5,2.1,23.5,
+1000,12.3,2.5,24.1,
+2000,15.8,3.2,25.2,
+3000,14.2,2.8,26.8,start_event
+4000,18.5,3.9,28.3,
+5000,22.1,4.5,29.7,
+6000,19.3,3.7,31.2,
+7000,16.7,3.1,32.4,
+8000,20.4,4.2,33.8,
+9000,24.8,5.1,35.1,peak
+10000,21.2,4.3,34.6,
+11000,17.9,3.5,33.2,
+12000,15.3,2.9,31.8,
+13000,13.8,2.4,30.4,
+14000,11.2,2.0,29.1,end_event
+15000,10.8,1.9,28.2,`;
+            
+            document.getElementById('csvTextarea').value = sampleData;
+        }
+
+        function processPastedCSV(event) {
+            event.preventDefault();
+            
+            const csvText = document.getElementById('csvTextarea').value;
+            const hasHeaders = document.getElementById('hasHeaders').checked;
+            
+            document.getElementById('loading').classList.add('active');
+            
+            // Parse the pasted CSV
+            Papa.parse(csvText, {
+                complete: function(results) {
+                    if (hasHeaders) {
+                        processCSVData(results.data);
+                    } else {
+                        // Add default headers if not present
+                        const dataWithHeaders = results.data.map(row => ({
+                            time: row[0],
+                            distance: row[1],
+                            flux: row[2],
+                            marker: row[3] || ''
+                        }));
+                        processCSVData(dataWithHeaders);
+                    }
+                    document.getElementById('loading').classList.remove('active');
+                    closePasteModal();
+                    
+                    // Update filename display
+                    document.getElementById('fileName').textContent = 'Pasted CSV Data';
+                },
+                header: hasHeaders,
+                dynamicTyping: true,
+                skipEmptyLines: true,
+                delimitersToGuess: [',', '\t', '|', ';']
+            });
+        }
+
+        // Close paste modal on outside click
+        document.getElementById('pasteModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePasteModal();
+            }
+        });
+
+        // Close selection modal on outside click
+        document.getElementById('selectionModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeSelectionModal();
+            }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl/Cmd + V to open paste modal (when not in an input field)
+            if ((e.ctrlKey || e.metaKey) && e.key === 'v' && !e.target.matches('input, textarea')) {
+                e.preventDefault();
+                showPasteModal();
+            }
+            
+            // Space to play/pause (when not in an input field)
+            if (e.key === ' ' && !e.target.matches('input, textarea') && csvData.length > 0) {
+                e.preventDefault();
+                togglePlay();
+            }
+            
+            // Plus/Equals key to zoom in
+            if ((e.key === '+' || e.key === '=') && !e.target.matches('input, textarea') && chart) {
+                e.preventDefault();
+                zoomIn();
+            }
+            
+            // Minus key to zoom out
+            if (e.key === '-' && !e.target.matches('input, textarea') && chart) {
+                e.preventDefault();
+                zoomOut();
+            }
+            
+            // 0 key to reset zoom
+            if (e.key === '0' && !e.target.matches('input, textarea') && chart) {
+                e.preventDefault();
+                resetZoom();
+            }
+            
+            // Escape to close modals
+            if (e.key === 'Escape') {
+                closeMarkerModal();
+                closePasteModal();
+                closeSelectionModal();
+                if (selectionMode) {
+                    toggleSelectionMode();
+                }
+            }
+        });
+
+        // Reset all data
+        function resetAll() {
+            if (confirm('This will clear all data and markers. Continue?')) {
+                // Stop playback
+                isPlaying = false;
+                stopPlayback();
+                document.getElementById('playIcon').style.display = 'block';
+                document.getElementById('pauseIcon').style.display = 'none';
+                
+                // Clear data
+                csvData = [];
+                filteredData = [];
+                markers = [];
+                currentIndex = 0;
+                
+                // Clear chart
+                if (chart) {
+                    chart.resetZoom();
+                    chart.destroy();
+                    chart = null;
+                }
+                
+                // Hide UI elements
+                document.getElementById('statsContainer').style.display = 'none';
+                document.getElementById('chartContainer').style.display = 'none';
+                document.getElementById('playerControls').style.display = 'none';
+                document.getElementById('filtersContainer').style.display = 'none';
+                document.getElementById('markerList').style.display = 'none';
+                document.getElementById('zoomIndicator').classList.remove('active');
+                
+                // Reset file input
+                document.getElementById('csvFile').value = '';
+                document.getElementById('fileName').textContent = 'Click to upload CSV file';
+                
+                // Clear filters
+                resetFilters();
+                
+                // Exit selection mode if active
+                if (selectionMode) {
+                    toggleSelectionMode();
+                }
+                
+                showToast('All data cleared');
+            }
+        }
+
+        // Selection mode functionality
+        function toggleSelectionMode() {
+            selectionMode = !selectionMode;
+            const container = document.getElementById('chartContainer');
+            const btn = document.getElementById('selectionModeBtn');
+            
+            if (selectionMode) {
+                container.classList.add('selection-mode');
+                btn.classList.remove('btn-secondary');
+                btn.style.background = 'var(--accent)';
+                showToast('Selection mode enabled - Hover to preview, click and drag to select data ranges');
+            } else {
+                container.classList.remove('selection-mode');
+                btn.classList.add('btn-secondary');
+                btn.style.background = '';
+                hideSelection();
+                hideHoverPreview();
+            }
+        }
+
+        // Find nearest data point by time value (more accurate)
+        function findNearestDataIndexByTime(timeValue) {
+            if (!filteredData.length) return null;
+            
+            // Use binary search for better performance and accuracy
+            let left = 0;
+            let right = filteredData.length - 1;
+            let nearestIndex = 0;
+            let minDiff = Infinity;
+            
+            // Binary search to find closest time
+            while (left <= right) {
+                const mid = Math.floor((left + right) / 2);
+                const midTime = filteredData[mid].time;
+                const diff = Math.abs(midTime - timeValue);
+                
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    nearestIndex = mid;
+                }
+                
+                if (midTime < timeValue) {
+                    left = mid + 1;
+                } else {
+                    right = mid - 1;
+                }
+            }
+            
+            // Check adjacent points for even better accuracy
+            for (let i = Math.max(0, nearestIndex - 2); i <= Math.min(filteredData.length - 1, nearestIndex + 2); i++) {
+                const diff = Math.abs(filteredData[i].time - timeValue);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    nearestIndex = i;
+                }
+            }
+            
+            return nearestIndex;
+        }
+
+        // Get nearest data point index (wrapper for backward compatibility)
+        function getNearestDataIndex(chartX) {
+            if (!chart || !filteredData.length) return null;
+            
+            const xScale = chart.scales.x;
+            const timeValue = xScale.getValueForPixel(chartX);
+            
+            return findNearestDataIndexByTime(timeValue);
+        }
+
+        // Chart mouse events for selection
+        let chartCanvas = null;
+        
+        function setupChartEvents() {
+            chartCanvas = document.getElementById('dataChart');
+            if (!chartCanvas) return;
+            
+            chartCanvas.addEventListener('mousedown', handleMouseDown);
+            chartCanvas.addEventListener('mousemove', handleMouseMove);
+            chartCanvas.addEventListener('mouseup', handleMouseUp);
+            chartCanvas.addEventListener('mouseleave', handleMouseLeave);
+            
+            // Add hover preview for selection mode
+            chartCanvas.addEventListener('mousemove', function(e) {
+                if (!selectionMode || isSelecting) return;
+                
+                const rect = chartCanvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const chartArea = chart.chartArea;
+                
+                if (x >= chartArea.left && x <= chartArea.right && 
+                    y >= chartArea.top && y <= chartArea.bottom) {
+                    
+                    // Convert to time value for accurate data point finding
+                    const xScale = chart.scales.x;
+                    const timeValue = xScale.getValueForPixel(x);
+                    const nearestIndex = findNearestDataIndexByTime(timeValue);
+                    
+                    if (nearestIndex !== null) {
+                        showHoverPreview(nearestIndex, x, y);
+                    }
+                } else {
+                    hideHoverPreview();
+                }
+            });
+            
+            chartCanvas.addEventListener('mouseleave', hideHoverPreview);
+        }
+        
+        let hoverPreviewElement = null;
+        
+        function showHoverPreview(dataIndex, x, y) {
+            if (!filteredData[dataIndex]) return;
+            
+            const dataPoint = filteredData[dataIndex];
+            const container = document.getElementById('chartContainer');
+            const containerRect = container.getBoundingClientRect();
+            const canvasRect = chartCanvas.getBoundingClientRect();
+            
+            if (!hoverPreviewElement) {
+                hoverPreviewElement = document.createElement('div');
+                hoverPreviewElement.style.position = 'absolute';
+                hoverPreviewElement.style.background = 'rgba(0, 0, 0, 0.9)';
+                hoverPreviewElement.style.color = 'white';
+                hoverPreviewElement.style.padding = '6px 10px';
+                hoverPreviewElement.style.borderRadius = '6px';
+                hoverPreviewElement.style.fontSize = '11px';
+                hoverPreviewElement.style.pointerEvents = 'none';
+                hoverPreviewElement.style.zIndex = '1000';
+                hoverPreviewElement.style.whiteSpace = 'nowrap';
+                hoverPreviewElement.style.border = '1px solid rgba(255,255,255,0.2)';
+                hoverPreviewElement.style.maxWidth = '200px';
+                container.appendChild(hoverPreviewElement);
+            }
+            
+            // Show more detailed information
+            const relativeTime = dataPoint.time - startTime;
+            hoverPreviewElement.innerHTML = `
+                <div><strong>Time:</strong> ${formatTime(relativeTime)}</div>
+                <div><strong>Raw:</strong> ${Math.round(dataPoint.time).toLocaleString()} ms</div>
+                <div><strong>Distance:</strong> ${dataPoint.distance.toFixed(2)}</div>
+                <div><strong>Flux:</strong> ${dataPoint.flux.toFixed(2)}</div>
+                <div><strong>Temperature:</strong> ${(dataPoint.temperature || 0).toFixed(1)}°C</div>
+                <div style="font-size: 10px; color: #ccc; margin-top: 2px;">Index: ${dataIndex}</div>
+            `;
+            
+            // Position relative to container
+            const posX = x + (canvasRect.left - containerRect.left) + 15;
+            const posY = y + (canvasRect.top - containerRect.top) - 50;
+            
+            hoverPreviewElement.style.left = posX + 'px';
+            hoverPreviewElement.style.top = posY + 'px';
+            hoverPreviewElement.style.display = 'block';
+        }
+        
+        function hideHoverPreview() {
+            if (hoverPreviewElement) {
+                hoverPreviewElement.style.display = 'none';
+            }
+        }
+
+        function handleMouseDown(e) {
+            if (!selectionMode || !chart) return;
+            
+            // Don't start selection if Ctrl is held (for zoom drag)
+            if (e.ctrlKey) return;
+            
+            const rect = chartCanvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const chartArea = chart.chartArea;
+            
+            // Check if click is within chart area
+            if (x >= chartArea.left && x <= chartArea.right && 
+                y >= chartArea.top && y <= chartArea.bottom) {
+                
+                isSelecting = true;
+                
+                // Convert canvas coordinates to chart coordinates
+                const chartX = x - chartArea.left;
+                const xScale = chart.scales.x;
+                const timeValue = xScale.getValueForPixel(x);
+                
+                selectionStartIndex = findNearestDataIndexByTime(timeValue);
+                selectionStart = x;
+                
+                // Debug logging
+                console.log('Selection started:', {
+                    mouseX: x,
+                    timeValue: timeValue,
+                    dataIndex: selectionStartIndex,
+                    dataPoint: filteredData[selectionStartIndex]
+                });
+                
+                const overlay = document.getElementById('selectionOverlay');
+                const containerRect = document.getElementById('chartContainer').getBoundingClientRect();
+                const canvasRect = chartCanvas.getBoundingClientRect();
+                
+                overlay.style.display = 'block';
+                overlay.style.left = (x + (canvasRect.left - containerRect.left)) + 'px';
+                overlay.style.top = (chartArea.top + (canvasRect.top - containerRect.top)) + 'px';
+                overlay.style.width = '0px';
+                overlay.style.height = (chartArea.bottom - chartArea.top) + 'px';
+                
+                // Show initial snap indicator
+                updateSnapIndicators();
+                
+                // Prevent default to avoid chart interactions
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        }
+
+        function handleMouseMove(e) {
+            if (!isSelecting || !chart) return;
+            
+            const rect = chartCanvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const chartArea = chart.chartArea;
+            
+            // Constrain to chart area
+            const constrainedX = Math.max(chartArea.left, Math.min(x, chartArea.right));
+            const constrainedY = Math.max(chartArea.top, Math.min(y, chartArea.bottom));
+            
+            // Convert to time value for accurate data point finding
+            const xScale = chart.scales.x;
+            const timeValue = xScale.getValueForPixel(constrainedX);
+            
+            selectionEnd = constrainedX;
+            selectionEndIndex = findNearestDataIndexByTime(timeValue);
+            
+            const overlay = document.getElementById('selectionOverlay');
+            const containerRect = document.getElementById('chartContainer').getBoundingClientRect();
+            const canvasRect = chartCanvas.getBoundingClientRect();
+            
+            const left = Math.min(selectionStart, constrainedX);
+            const width = Math.abs(constrainedX - selectionStart);
+            
+            overlay.style.left = (left + (canvasRect.left - containerRect.left)) + 'px';
+            overlay.style.width = width + 'px';
+            
+            // Update snap indicators with debouncing for better performance
+            clearTimeout(window.snapTimeout);
+            window.snapTimeout = setTimeout(updateSnapIndicators, 16); // ~60fps
+            
+            // Prevent default to avoid interfering with chart
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        function updateSnapIndicators() {
+            // Remove existing indicators
+            document.querySelectorAll('.snap-indicator').forEach(el => el.remove());
+            
+            if (!chart || selectionStartIndex === null) return;
+            
+            const container = document.getElementById('chartContainer');
+            const xScale = chart.scales.x;
+            const yScale = chart.scales.y;
+            const chartArea = chart.chartArea;
+            
+            // Helper function to create indicator
+            function createIndicator(dataIndex, label) {
+                if (dataIndex === null || !filteredData[dataIndex]) return;
+                
+                const dataPoint = filteredData[dataIndex];
+                const pixelX = xScale.getPixelForValue(dataPoint.time);
+                
+                // Use the distance line for Y positioning if showing distance, otherwise center
+                let pixelY;
+                if (document.getElementById('showDistance').checked) {
+                    pixelY = yScale.getPixelForValue(dataPoint.distance);
+                } else {
+                    pixelY = chartArea.top + (chartArea.bottom - chartArea.top) / 2;
+                }
+                
+                // Only show if within chart area bounds
+                if (pixelX >= chartArea.left && pixelX <= chartArea.right &&
+                    pixelY >= chartArea.top && pixelY <= chartArea.bottom) {
+                    
+                    const indicator = document.createElement('div');
+                    indicator.className = 'snap-indicator';
+                    
+                    // Position relative to the chart container
+                    const containerRect = container.getBoundingClientRect();
+                    const canvasRect = document.getElementById('dataChart').getBoundingClientRect();
+                    
+                    indicator.style.left = (pixelX + (canvasRect.left - containerRect.left)) + 'px';
+                    indicator.style.top = (pixelY + (canvasRect.top - containerRect.top)) + 'px';
+                    indicator.title = `${label}: ${formatTime(dataPoint.time - startTime)}\nDistance: ${dataPoint.distance.toFixed(2)}\nFlux: ${dataPoint.flux.toFixed(2)}\nTemperature: ${(dataPoint.temperature || 0).toFixed(1)}°C`;
+                    
+                    container.appendChild(indicator);
+                }
+            }
+            
+            // Add start indicator
+            createIndicator(selectionStartIndex, 'Start');
+            
+            // Add end indicator if different from start
+            if (selectionEndIndex !== null && selectionEndIndex !== selectionStartIndex) {
+                createIndicator(selectionEndIndex, 'End');
+            }
+        }
+
+        function handleMouseUp(e) {
+            if (!isSelecting || !chart) return;
+            
+            isSelecting = false;
+            
+            if (selectionStartIndex !== null && selectionEndIndex !== null && 
+                selectionStartIndex !== selectionEndIndex) {
+                
+                // Ensure start is before end
+                const startIdx = Math.min(selectionStartIndex, selectionEndIndex);
+                const endIdx = Math.max(selectionStartIndex, selectionEndIndex);
+                
+                showSelectionModal(startIdx, endIdx);
+            } else {
+                hideSelection();
+            }
+        }
+
+        function handleMouseLeave(e) {
+            if (isSelecting) {
+                isSelecting = false;
+                hideSelection();
+            }
+        }
+
+        function hideSelection() {
+            const overlay = document.getElementById('selectionOverlay');
+            overlay.style.display = 'none';
+            selectionStart = null;
+            selectionEnd = null;
+            selectionStartIndex = null;
+            selectionEndIndex = null;
+            
+            // Remove snap indicators
+            document.querySelectorAll('.snap-indicator').forEach(el => el.remove());
+        }
+
+        // Selection modal functions
+        function showSelectionModal(startIdx, endIdx) {
+            const startData = filteredData[startIdx];
+            const endData = filteredData[endIdx];
+            
+            // Update range display
+            const rangeText = `${formatTime(startData.time - startTime)} - ${formatTime(endData.time - startTime)}`;
+            document.getElementById('selectionRange').textContent = rangeText;
+            
+            // Populate existing markers
+            const existingGroup = document.getElementById('existingMarkersGroup');
+            existingGroup.innerHTML = '';
+            
+            const uniqueMarkers = [...new Set(markers.map(m => m.name))];
+            uniqueMarkers.forEach(name => {
+                const marker = markers.find(m => m.name === name);
+                const option = document.createElement('option');
+                option.value = name;
+                option.textContent = name;
+                option.style.color = marker.color;
+                existingGroup.appendChild(option);
+            });
+            
+            // Store selection for later use
+            window.currentSelection = {
+                startTime: startData.time,
+                endTime: endData.time,
+                startIdx: startIdx,
+                endIdx: endIdx
+            };
+            
+            document.getElementById('selectionModal').classList.add('active');
+            document.getElementById('markerChoice').value = 'new';
+            handleMarkerChoice();
+            
+            hideSelection();
+        }
+
+        function closeSelectionModal() {
+            document.getElementById('selectionModal').classList.remove('active');
+            document.getElementById('selectionMarkerName').value = '';
+            window.currentSelection = null;
+        }
+
+        function handleMarkerChoice() {
+            const choice = document.getElementById('markerChoice').value;
+            const newFields = document.getElementById('newMarkerFields');
+            
+            if (choice === 'new') {
+                newFields.style.display = 'block';
+                document.getElementById('selectionMarkerName').required = true;
+            } else {
+                newFields.style.display = 'none';
+                document.getElementById('selectionMarkerName').required = false;
+                
+                // Get color from existing marker
+                const existingMarker = markers.find(m => m.name === choice);
+                if (existingMarker) {
+                    selectedColor = existingMarker.color;
+                }
+            }
+        }
+
+        function createSelectionMarker(event) {
+            event.preventDefault();
+            
+            if (!window.currentSelection) return;
+            
+            const choice = document.getElementById('markerChoice').value;
+            let markerName, markerColor;
+            
+            if (choice === 'new') {
+                markerName = document.getElementById('selectionMarkerName').value;
+                markerColor = selectedColor;
+            } else {
+                markerName = choice;
+                const existingMarker = markers.find(m => m.name === markerName);
+                markerColor = existingMarker ? existingMarker.color : selectedColor;
+            }
+            
+            const marker = {
+                id: Date.now(),
+                name: markerName,
+                type: 'section',
+                startTime: window.currentSelection.startTime,
+                endTime: window.currentSelection.endTime,
+                color: markerColor
+            };
+            
+            markers.push(marker);
+            updateMarkerList();
+            renderMarkers();
+            closeSelectionModal();
+            
+            showToast(`Section marker "${markerName}" created`);
+        }
+    </script>
+</body>
+</html>

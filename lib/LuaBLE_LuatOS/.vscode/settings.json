@@ -1,0 +1,20 @@
+{
+    "files.associations": {
+        "luat_network_adapter.h": "c",
+        "luat_log.h": "c",
+        "c_common.h": "c",
+        "lauxlib.h": "c",
+        "lua.h": "c",
+        "stdint.h": "c",
+        "rotable2.h": "c",
+        "luat_espnow.h": "c",
+        "luat_base.h": "c",
+        "luat_msgbus.h": "c",
+        "luat_fs.h": "c",
+        "stdlib.h": "c",
+        "string.h": "c",
+        "espnow_handle.h": "c",
+        "luat_cmux.h": "c",
+        "printf.h": "c"
+    }
+}

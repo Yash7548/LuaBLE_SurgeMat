@@ -1,0 +1,42 @@
+# Syntax Coloring Map For BLEController Library
+
+# Datatypes (KEYWORD1)
+BLEController	KEYWORD1
+Message	KEYWORD1
+FileTransferStatus	KEYWORD1
+ServerCallbacks	KEYWORD1
+CharCallbacks	KEYWORD1
+OtaCallbacks	KEYWORD1
+
+# Methods and Functions (KEYWORD2)
+begin	KEYWORD2
+setDeviceName	KEYWORD2
+getDeviceName	KEYWORD2
+processJsonMessages	KEYWORD2
+processTextMessages	KEYWORD2
+updateBatteryAndVersion	KEYWORD2
+setServiceUUID	KEYWORD2
+setCharacteristicUUIDs	KEYWORD2
+setOnConnectCallback	KEYWORD2
+setOnDisconnectCallback	KEYWORD2
+setOtaCallbacks	KEYWORD2
+sendMessage	KEYWORD2
+transferFileFromSPIFFS	KEYWORD2
+registerMessageCallback	KEYWORD2
+registerHighPriorityCallback	KEYWORD2
+switchToTextMode	KEYWORD2
+switchToJsonMode	KEYWORD2
+handleOTA	KEYWORD2
+stop	KEYWORD2
+
+# Constants (LITERAL1)
+BLE_SERVICE_UUID	LITERAL1
+BLE_UUID_TX	LITERAL1
+BLE_UUID_RX	LITERAL1
+BATTERY_SERVICE_UUID	LITERAL1
+OTA_SERVICE_UUID	LITERAL1
+OTA_UUID_RX	LITERAL1
+OTA_UUID_TX	LITERAL1
+BLE_NAME_PREFIX	LITERAL1
+BLE_NAME_LENGTH	LITERAL1
+BLE_PRODUCT_UUID	LITERAL1

@@ -1,0 +1,8 @@
+# Name,     Type, SubType, Offset,  Size  
+nvs,        data, nvs,     0x9000,   0x19000    
+otadata,    data, ota,     0x22000,  0x2000     
+phy_init,   data, phy,     0x24000,  0x1000     
+coredump,   data, coredump, 0x25000, 0x10000    
+app0,       app,  ota_0,   0x35000,  0x1A0000   
+app1,       app,  ota_1,   0x1D5000, 0x1A0000   
+spiffs,     data, spiffs,  0x375000, 0x8B000    

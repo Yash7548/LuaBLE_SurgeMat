@@ -1,0 +1,16 @@
+{
+    "files.associations": {
+        "new": "cpp",
+        "luat_log.h": "c",
+        "esp_system.h": "c",
+        "luat_network_adapter.h": "c",
+        "luat_base.h": "c",
+        "opt.h": "c",
+        "timeouts.h": "c",
+        "tcp_priv.h": "c",
+        "string": "cpp",
+        "global.h": "c"
+    },
+    "claudeCodeChat.permissions.yoloMode": false,
+    "liveServer.settings.port": 5501
+}
