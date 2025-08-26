@@ -232,6 +232,12 @@ static void registerCustomFunctions(lua_State *L)
     lua_register_rfid(L);
     lua_register_userbutton(L);
 
+    // Register LiDAR functions
+    lua_register_lidar(L);
+
+    // Register Force Sensor functions
+    lua_register_forcesensor(L);
+
     // Register BLE functions
     lua_register(L, "ble_print", lua_ble_print);
     lua_register(L, "exit", lua_exit);

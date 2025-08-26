@@ -9,8 +9,11 @@ void initializeDevice()
     buzzer_init_c();
     buzzer_set_speed_c(160); // Set default speed to 80ms
     buzzer_play_music_c("A2B2B2A2");
+    initializeLidar();
     initRfidDisplay();
     initializeUserButton();
+    initializeForceSensor();
+   
     
    
    
@@ -69,3 +72,67 @@ void initializeUserButton()
     LLOGI("User Button initialized");
 }
 
+void initializeLidar()
+{
+
+    bool successtop = false;
+    bool successbottom =false;
+
+    Wire1.setPins(LIDAR_TOP_SDA, LIDAR_TOP_SCL);
+    Wire.setPins(LIDAR_BOTTOM_SDA, LIDAR_BOTTOM_SCL);
+
+    lidarTop.begin(&Wire1,LIDAR_TOP_SDA,LIDAR_TOP_SCL);
+
+    if (lidarTop.start()) {
+                LLOGI("Top LiDAR continuous mode started");
+                successtop = true;
+            } else {
+                LLOGI("Failed to start Top LiDAR continuous mode");
+                successtop = false;
+            }
+
+
+     delay(50);
+
+
+    lidarBottom.begin(&Wire,LIDAR_BOTTOM_SDA,LIDAR_BOTTOM_SCL);
+
+      if (lidarBottom.start()) {
+                successbottom = true;
+                LLOGI("Bottom LiDAR continuous mode started");
+            } else {
+                LLOGI("Failed to start Bottom LiDAR continuous mode");
+                successbottom = false;
+            }
+
+             if(successbottom  && successtop){
+        // buzzer.beepAsync(400, 200, 2);
+
+
+    }
+    else
+    {
+        // buzzer.beepAsync(200, 200, 3);
+
+    }
+}
+
+
+
+
+void initializeForceSensor()
+{
+    // forceSensor.begin();
+    // INFO_PRINTLN("Force Sensor initialized");
+  // Initialize left force sensor
+    forceSensorLeft.begin();
+    LLOGI("Left Force Sensor initialized");
+    
+    // Initialize right force sensor
+    forceSensorRight.begin();
+    LLOGI("Right Force Sensor initialized");
+    
+    // Optional: Add a confirmation beep for successful initialization
+    // buzzer.beepAsync(300, 100, 1);
+
+}

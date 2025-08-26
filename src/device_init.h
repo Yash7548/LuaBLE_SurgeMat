@@ -11,5 +11,8 @@ void initializeBLEController(String deviceName="");
 void intializeStorage();
 void initRfidDisplay();
 void initializeUserButton();
+void initializeLidar();
+void initializeForceSensor();
+
 
 #endif // DEVICE_INIT_H

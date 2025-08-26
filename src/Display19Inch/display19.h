@@ -43,4 +43,6 @@ static int lua_wrapper_display_color565(lua_State *lua_state);
 static int lua_wrapper_display_colorRGB(lua_State *lua_state);
 static int lua_wrapper_display_get_colors(lua_State *lua_state);
 
+
+
 #endif

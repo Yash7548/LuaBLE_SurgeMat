@@ -336,7 +336,7 @@ static int lua_render_jpeg(lua_State *L)
     }
 
     // Try to render the JPEG
-    bool success = TJpgDec.drawFsJpg(0, 0, path);
+    bool success = TJpgDec.drawFsJpg(0, 0, path,LittleFS);
 
     // Return success/failure to Lua
     lua_pushboolean(L, success);
@@ -406,7 +406,7 @@ bool renderJPEG(const char *path)
   TJpgDec.getFsJpgSize(&w, &h, path); // Note name preceded with "/"
   Serial.print("Width = "); Serial.print(w); Serial.print(", height = "); Serial.println(h);
     // Draw the image
-    return TJpgDec.drawFsJpg(0, 0, path);
+    return TJpgDec.drawFsJpg(0, 0, path,LittleFS);
 }
 
 
